@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>דקל כמויות — מחירון לאקסל</title>
+  <meta name="description" content="כלי להמרת מחירון דקל מ-PDF/Excel לגיליון כמויות Excel" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800&family=Rubik:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="bg-wash" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <div>
+        <p class="brand-name">דקל כמויות</p>
+        <p class="brand-tag">מחירון → Excel</p>
+      </div>
+    </div>
+    <nav class="header-actions">
+      <button type="button" class="btn btn-ghost" id="btn-sample" title="טען דוגמה">דוגמה</button>
+      <button type="button" class="btn btn-primary" id="btn-export" disabled>ייצוא Excel</button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="hero">
+      <h1>מחירון דקל לגיליון כמויות</h1>
+      <p class="hero-lead">
+        העלו PDF או Excel של מחירון דקל, ערכו כמויות ופרמטרים, וייצאו גיליון BOQ מוכן.
+      </p>
+      <div class="cta-row">
+        <label class="btn btn-primary file-btn">
+          טעינת מחירון
+          <input type="file" id="catalog-input" accept=".pdf,.xlsx,.xls,.csv,.txt" hidden />
+        </label>
+        <label class="btn btn-secondary file-btn">
+          שרטוט / כמויות
+          <input type="file" id="drawing-input" accept=".pdf,.dxf,.dwg,.xlsx,.xls,.csv,.txt" hidden />
+        </label>
+      </div>
+      <p class="hero-note">PDF ו-Excel נתמכים במלואם. DXF נקרא כטקסט. DWG דורש המרה ל-PDF/DXF.</p>
+    </section>
+
+    <section class="panel project-panel" id="project-panel" hidden>
+      <h2>פרטי פרויקט</h2>
+      <div class="form-grid">
+        <label>
+          שם פרויקט
+          <input type="text" id="project-name" placeholder="לדוגמה: שיפוץ מבנה מגורים" />
+        </label>
+        <label>
+          לקוח / מזמין
+          <input type="text" id="client-name" placeholder="שם הלקוח" />
+        </label>
+        <label>
+          תאריך
+          <input type="date" id="project-date" />
+        </label>
+        <label>
+          הנחה כללית (%)
+          <input type="number" id="global-discount" value="0" min="0" max="100" step="0.1" />
+        </label>
+        <label>
+          מע״מ (%)
+          <input type="number" id="vat-rate" value="17" min="0" max="100" step="0.1" />
+        </label>
+        <label>
+          מקדם תייקור
+          <input type="number" id="index-factor" value="1" min="0" step="0.001" />
+        </label>
+      </div>
+    </section>
+
+    <section class="panel status-panel" id="status-panel" hidden>
+      <div class="status-bar">
+        <p id="status-text"></p>
+        <div class="status-stats" id="status-stats"></div>
+      </div>
+      <div class="toolbar">
+        <input type="search" id="search-items" placeholder="חיפוש לפי קוד / תיאור…" />
+        <select id="filter-chapter">
+          <option value="">כל הפרקים</option>
+        </select>
+        <button type="button" class="btn btn-secondary" id="btn-add-row">הוסף סעיף</button>
+        <button type="button" class="btn btn-ghost" id="btn-clear-qty">אפס כמויות</button>
+      </div>
+    </section>
+
+    <section class="panel table-panel" id="table-panel" hidden>
+      <div class="table-wrap">
+        <table id="items-table">
+          <thead>
+            <tr>
+              <th>בחר</th>
+              <th>קוד סעיף</th>
+              <th>תיאור</th>
+              <th>יחידה</th>
+              <th>כמות</th>
+              <th>מחיר יח׳</th>
+              <th>הנחה %</th>
+              <th>סה״כ</th>
+              <th>הערות</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="items-body"></tbody>
+        </table>
+      </div>
+      <div class="totals" id="totals">
+        <div><span>לפני מע״מ</span><strong id="total-before">₪0</strong></div>
+        <div><span>מע״מ</span><strong id="total-vat">₪0</strong></div>
+        <div class="grand"><span>סה״כ כולל מע״מ</span><strong id="total-grand">₪0</strong></div>
+      </div>
+    </section>
+
+    <section class="panel help-panel">
+      <h2>איך זה עובד</h2>
+      <ol>
+        <li>טענו מחירון דקל כ־PDF או Excel — המערכת מזהה קודי סעיפים, תיאורים, יחידות ומחירים.</li>
+        <li>אופציונלי: העלו שרטוט PDF / קובץ DXF / גיליון כמויות — לזיהוי כמויות או קודי סעיפים.</li>
+        <li>ערכו כמויות, הנחות ומקדמים, וסמנו רק את הסעיפים הרלוונטיים.</li>
+        <li>ייצאו ל־Excel: קוד, תיאור, יחידה, כמות, מחיר, הנחה, סה״כ, פרק ומע״מ.</li>
+      </ol>
+      <p class="dwg-note">
+        קבצי DWG מקוריים הם פורמט סגור של AutoCAD. לשליפת טקסט אמינה המירו ל־PDF או DXF לפני הטעינה.
+      </p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>עיבוד מקומי בדפדפן — הקבצים לא נשלחים לשרת.</p>
+  </footer>
+
+  <dialog id="add-dialog">
+    <form method="dialog" id="add-form">
+      <h3>סעיף חדש</h3>
+      <label>קוד סעיף<input name="code" required placeholder="01.01.001" /></label>
+      <label>תיאור<input name="desc" required /></label>
+      <label>יחידה<input name="unit" placeholder='מ"ר' /></label>
+      <label>מחיר יח׳<input name="price" type="number" min="0" step="0.01" value="0" /></label>
+      <label>כמות<input name="qty" type="number" min="0" step="0.01" value="1" /></label>
+      <div class="dialog-actions">
+        <button type="submit" class="btn btn-primary" value="ok">הוסף</button>
+        <button type="submit" class="btn btn-ghost" value="cancel">ביטול</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
