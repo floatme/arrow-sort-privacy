@@ -98,7 +98,40 @@
     return clean.toString();
   }
 
+  function prepareSourceUrl(rawUrl) {
+    var url = normalizeInputUrl(rawUrl);
+    if (!url) {
+      return { ok: false, error: "Paste a valid AliExpress product link." };
+    }
+    if (!isAliExpressHost(hostnameOf(url))) {
+      return { ok: false, error: "That does not look like an AliExpress link." };
+    }
+    if (isShortAffiliateLink(url)) {
+      return {
+        ok: false,
+        error: "That is already a short affiliate link. Paste the original product page URL.",
+      };
+    }
+
+    var productUrl = canonicalize(url);
+    var productId = null;
+    try {
+      productId = extractProductIdFromUrl(new URL(productUrl));
+    } catch (err) {
+      productId = null;
+    }
+
+    return {
+      ok: true,
+      productUrl: productUrl,
+      productId: productId,
+    };
+  }
+
   function convert(rawUrl, trackingId) {
+    var prepared = prepareSourceUrl(rawUrl);
+    if (!prepared.ok) return prepared;
+
     var tid = String(trackingId || "").trim();
     if (!tid) {
       return { ok: false, error: "Add your Tracking ID first." };
@@ -110,22 +143,7 @@
       };
     }
 
-    var url = normalizeInputUrl(rawUrl);
-    if (!url) {
-      return { ok: false, error: "Paste a valid AliExpress product link." };
-    }
-    if (!isAliExpressHost(hostnameOf(url))) {
-      return { ok: false, error: "That does not look like an AliExpress link." };
-    }
-    if (isShortAffiliateLink(url)) {
-      return {
-        ok: false,
-        error:
-          "Short s.click links cannot be re-wrapped. Paste the original product page URL instead.",
-      };
-    }
-
-    var productUrl = canonicalize(url);
+    var productUrl = prepared.productUrl;
     var affiliate = new URL("https://s.click.aliexpress.com/deep_link.htm");
     affiliate.searchParams.set("aff_short_key", tid);
     affiliate.searchParams.set("dl_target_url", productUrl);
@@ -184,6 +202,7 @@
   var api = {
     convert: convert,
     convertMany: convertMany,
+    prepareSourceUrl: prepareSourceUrl,
     extractTrackingIdFromLink: extractTrackingIdFromLink,
     extractProductIdFromUrl: extractProductIdFromUrl,
     canonicalize: canonicalize,

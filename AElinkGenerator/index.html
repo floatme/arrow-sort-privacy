@@ -3,11 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AliExpress Affiliate Link Converter</title>
-  <meta name="description" content="Paste an AliExpress product link and turn it into an affiliate link tagged with your Tracking ID. Runs in your browser." />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,680&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <title>AElinkGenerator</title>
   <style>
     :root {
       --ink: #1b1510;
@@ -24,30 +20,27 @@
       --shadow: 0 18px 40px rgba(60, 36, 18, 0.08);
       --radius: 18px;
     }
-
     * { box-sizing: border-box; }
     html, body { margin: 0; }
     body {
       min-height: 100vh;
+      min-width: 420px;
       color: var(--ink);
       background:
         radial-gradient(1200px 500px at 10% -10%, #fbe3c8 0%, transparent 55%),
         radial-gradient(900px 400px at 110% 0%, #f3cfc0 0%, transparent 50%),
         var(--paper);
-      font-family: "Source Sans 3", system-ui, sans-serif;
+      font-family: system-ui, "Segoe UI", sans-serif;
       line-height: 1.5;
     }
-
     .wrap {
       width: min(760px, calc(100% - 32px));
       margin: 0 auto;
       padding: 40px 0 72px;
     }
-
     header h1 {
-      font-family: Fraunces, Georgia, serif;
-      font-size: clamp(2rem, 5vw, 3.1rem);
-      font-weight: 680;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2rem, 5vw, 3rem);
       letter-spacing: -0.03em;
       line-height: 1.05;
       margin: 0 0 12px;
@@ -55,10 +48,9 @@
     header p.lede {
       margin: 0 0 28px;
       color: var(--muted);
-      font-size: 1.08rem;
+      font-size: 1.05rem;
       max-width: 42rem;
     }
-
     .card {
       background: var(--card);
       border: 1px solid var(--line);
@@ -68,96 +60,54 @@
       margin-bottom: 16px;
     }
     .card h2 {
-      margin: 0 0 6px;
+      margin: 0 0 8px;
       font-size: 0.82rem;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--muted);
       font-weight: 700;
     }
-
     label.field {
       display: block;
       font-weight: 600;
       margin-bottom: 8px;
     }
-    input[type="text"], textarea {
+    textarea {
       width: 100%;
+      min-height: 132px;
       border: 1px solid var(--line);
       background: #fff;
       color: var(--ink);
       border-radius: 12px;
       padding: 12px 14px;
       font: inherit;
-      font-size: 1rem;
+      resize: vertical;
     }
-    input[type="text"]:focus, textarea:focus {
+    textarea:focus {
       outline: 3px solid rgba(193, 59, 36, 0.25);
       border-color: var(--accent);
     }
-    textarea {
-      min-height: 132px;
-      resize: vertical;
-      line-height: 1.45;
-    }
-    .hint {
-      color: var(--muted);
-      font-size: 0.92rem;
-      margin: 8px 0 0;
-    }
-    .row {
-      display: flex;
-      gap: 10px;
-      align-items: stretch;
-    }
-    .row input { flex: 1; }
-
-    button {
+    .hint { color: var(--muted); font-size: 0.92rem; margin: 8px 0 0; }
+    button, .ghost-link {
       font: inherit;
       font-weight: 700;
       border: 0;
       cursor: pointer;
       border-radius: 12px;
     }
-    .primary {
-      background: var(--accent);
-      color: #fff;
-      padding: 12px 18px;
-    }
+    .primary { background: var(--accent); color: #fff; padding: 12px 18px; }
     .primary:hover { background: var(--accent-hover); }
-    .primary:disabled {
-      background: #c9b8aa;
-      cursor: not-allowed;
-    }
-    .ghost {
+    .primary:disabled { background: #c9b8aa; cursor: not-allowed; }
+    .ghost, .ghost-link {
       background: #fff;
       color: var(--ink);
       border: 1px solid var(--line);
       padding: 12px 14px;
+      text-decoration: none;
+      display: inline-block;
     }
-    .ghost:hover { background: #f7f0e7; }
-    .actions {
-      display: flex;
-      gap: 10px;
-      margin-top: 14px;
-      flex-wrap: wrap;
-    }
-
-    details.help {
-      margin-top: 12px;
-    }
-    details.help summary {
-      cursor: pointer;
-      color: var(--accent);
-      font-weight: 600;
-    }
-    details.help ol {
-      margin: 10px 0 0;
-      padding-left: 1.2rem;
-      color: var(--muted);
-    }
-    details.help a { color: var(--accent); }
-
+    .ghost:hover, .ghost-link:hover { background: #f7f0e7; }
+    .actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
     .status {
       display: none;
       margin-top: 12px;
@@ -165,25 +115,21 @@
       border-radius: 10px;
       font-weight: 600;
     }
-    .status.error {
-      display: block;
-      background: var(--warn-bg);
-      color: var(--warn);
+    .status.error { display: block; background: var(--warn-bg); color: var(--warn); }
+    .status.ok { display: block; background: var(--ok-bg); color: var(--ok); }
+    .pill {
+      display: inline-block;
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      margin-bottom: 8px;
     }
-    .status.ok {
-      display: block;
-      background: var(--ok-bg);
-      color: var(--ok);
-    }
-
-    .result {
-      display: none;
-    }
+    .pill.on { background: var(--ok-bg); color: var(--ok); }
+    .pill.off { background: var(--warn-bg); color: var(--warn); }
+    .result { display: none; }
     .result.visible { display: block; }
-    .result-item {
-      border-top: 1px solid var(--line);
-      padding: 16px 0 4px;
-    }
+    .result-item { border-top: 1px solid var(--line); padding: 16px 0 4px; }
     .result-item:first-child { border-top: 0; padding-top: 0; }
     .result-link {
       word-break: break-all;
@@ -194,23 +140,11 @@
       margin: 8px 0 10px;
       font-size: 0.95rem;
     }
-    .result-item.failed .result-link {
-      background: var(--warn-bg);
-      border-color: #efd2c2;
-    }
-    .meta {
-      color: var(--muted);
-      font-size: 0.9rem;
-      margin: 0 0 8px;
-    }
+    .result-item.failed .result-link { background: var(--warn-bg); border-color: #efd2c2; }
+    .meta { color: var(--muted); font-size: 0.9rem; margin: 0 0 8px; }
     .result-actions { display: flex; gap: 8px; flex-wrap: wrap; }
     .result-actions .ghost { padding: 8px 12px; font-size: 0.92rem; }
-
-    .history-list {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-    }
+    .history-list { list-style: none; margin: 0; padding: 0; }
     .history-list li {
       display: flex;
       justify-content: space-between;
@@ -225,24 +159,9 @@
       text-overflow: ellipsis;
       white-space: nowrap;
     }
-    .history-list button {
-      background: none;
-      color: var(--accent);
-      padding: 0;
-      font-weight: 600;
-    }
-
-    footer {
-      margin-top: 28px;
-      color: var(--muted);
-      font-size: 0.92rem;
-    }
-    footer a { color: var(--accent); }
-
-    @media (max-width: 560px) {
-      .wrap { padding-top: 24px; }
-      .row { flex-direction: column; }
-    }
+    .history-list button { background: none; color: var(--accent); padding: 0; }
+    footer { margin-top: 28px; color: var(--muted); font-size: 0.92rem; }
+    code { font-size: 0.9em; }
   </style>
 </head>
 <body>
@@ -250,28 +169,22 @@
     <header>
       <h1>Turn any AliExpress link into yours.</h1>
       <p class="lede">
-        Paste a product URL. This page wraps it with your AliExpress Tracking ID
-        and gives you an affiliate link. Everything stays in your browser.
+        Paste a product URL. This uses the AliExpress Portals Link Generator tab
+        already open in Chrome, with your logged-in affiliate account.
       </p>
     </header>
 
     <section class="card">
-      <h2>Your account</h2>
-      <label class="field" for="trackingId">Tracking ID</label>
-      <div class="row">
-        <input id="trackingId" type="text" autocomplete="off" spellcheck="false" placeholder="e.g. default or nY3BAUr" />
-        <button class="ghost" id="saveTracking" type="button">Save</button>
+      <h2>Portals session</h2>
+      <div id="connectionPill" class="pill off">Checking Chrome tab…</div>
+      <p class="hint" id="sessionHint">
+        Keep
+        <a href="https://portals.aliexpress.com/affiportals/web/link_generator.htm" id="generatorLink">the Link Generator</a>
+        open and logged in. This extension refreshes that tab every 25 minutes so AliExpress does not log you out.
+      </p>
+      <div class="actions">
+        <button class="ghost" id="openGenerator" type="button">Open / focus Link Generator</button>
       </div>
-      <p class="hint">Saved only on this device. You can also paste an existing affiliate deep link to detect the ID.</p>
-      <details class="help">
-        <summary>Where do I find my Tracking ID?</summary>
-        <ol>
-          <li>Sign in at <a href="https://portals.aliexpress.com/" rel="noopener">portals.aliexpress.com</a> (AliExpress Affiliate / Star).</li>
-          <li>Open <strong>Account</strong> (or Settings) → <strong>Tracking ID</strong>.</li>
-          <li>Create one if you do not have it yet, then paste that ID here.</li>
-          <li>If you already have an affiliate link that looks like <code>s.click.aliexpress.com/deep_link.htm?aff_short_key=...</code>, paste it here and we will pull the key out.</li>
-        </ol>
-      </details>
     </section>
 
     <section class="card">
@@ -282,7 +195,7 @@
         <button class="primary" id="convertBtn" type="button">Convert</button>
         <button class="ghost" id="clearBtn" type="button">Clear</button>
       </div>
-      <p class="hint">Works with product pages, mobile links, regional domains, and existing deep links. Short <code>s.click.aliexpress.com/e/...</code> links need the original product URL.</p>
+      <p class="hint">Uses the official Portals “Get Tracking Link” button. Short s.click links are already affiliate links.</p>
       <div id="status" class="status" role="status"></div>
     </section>
 
@@ -297,221 +210,11 @@
     </section>
 
     <footer>
-      Uses AliExpress deep links (<code>s.click.aliexpress.com/deep_link.htm</code>) with your Tracking ID.
-      You need an approved affiliate account for commissions to track.
-      Keep this project in <code>c:\AI\AElinkGenerator\</code> and open <code>index.html</code>.
+      Load this folder as an unpacked Chrome extension from <code>c:\AI\AElinkGenerator\</code>.
+      Click the extension icon, keep the Portals tab open, then convert.
     </footer>
   </div>
-
   <script src="converter.js"></script>
-  <script>
-    (function () {
-      var STORAGE_KEY = "ae-aff-tracking-id";
-      var HISTORY_KEY = "ae-aff-history";
-      var trackingInput = document.getElementById("trackingId");
-      var saveBtn = document.getElementById("saveTracking");
-      var sourceInput = document.getElementById("sourceUrls");
-      var convertBtn = document.getElementById("convertBtn");
-      var clearBtn = document.getElementById("clearBtn");
-      var statusEl = document.getElementById("status");
-      var resultCard = document.getElementById("resultCard");
-      var resultsEl = document.getElementById("results");
-      var historyCard = document.getElementById("historyCard");
-      var historyList = document.getElementById("historyList");
-
-      trackingInput.value = localStorage.getItem(STORAGE_KEY) || "";
-      renderHistory();
-
-      function setStatus(message, kind) {
-        statusEl.className = "status " + (kind || "");
-        statusEl.textContent = message || "";
-        statusEl.style.display = message ? "block" : "none";
-      }
-
-      function saveTrackingId(value, announce) {
-        var detected = AliExpressAffiliate.extractTrackingIdFromLink(value);
-        var id = (detected || value || "").trim();
-        trackingInput.value = id;
-        if (!id) {
-          localStorage.removeItem(STORAGE_KEY);
-          if (announce) setStatus("Tracking ID cleared.", "ok");
-          return;
-        }
-        if (!/^[A-Za-z0-9_-]{2,64}$/.test(id)) {
-          setStatus("That Tracking ID looks invalid.", "error");
-          return;
-        }
-        localStorage.setItem(STORAGE_KEY, id);
-        if (announce) {
-          setStatus(detected ? "Tracking ID detected and saved." : "Tracking ID saved on this device.", "ok");
-        }
-      }
-
-      function history() {
-        try {
-          return JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
-        } catch (err) {
-          return [];
-        }
-      }
-
-      function pushHistory(entry) {
-        var items = history().filter(function (item) {
-          return item.affiliateUrl !== entry.affiliateUrl;
-        });
-        items.unshift(entry);
-        localStorage.setItem(HISTORY_KEY, JSON.stringify(items.slice(0, 8)));
-        renderHistory();
-      }
-
-      function renderHistory() {
-        var items = history();
-        historyCard.hidden = items.length === 0;
-        historyList.innerHTML = "";
-        items.forEach(function (item) {
-          var li = document.createElement("li");
-          var a = document.createElement("a");
-          a.href = item.affiliateUrl;
-          a.target = "_blank";
-          a.rel = "noopener";
-          a.textContent = item.productUrl || item.affiliateUrl;
-          var copy = document.createElement("button");
-          copy.type = "button";
-          copy.textContent = "Copy";
-          copy.addEventListener("click", function () {
-            copyText(item.affiliateUrl, copy);
-          });
-          li.appendChild(a);
-          li.appendChild(copy);
-          historyList.appendChild(li);
-        });
-      }
-
-      function copyText(text, button) {
-        var original = button.textContent;
-        function done() {
-          button.textContent = "Copied";
-          button.setAttribute("aria-live", "polite");
-          setTimeout(function () { button.textContent = original; }, 1500);
-        }
-        function fallback() {
-          try {
-            var area = document.createElement("textarea");
-            area.value = text;
-            area.setAttribute("readonly", "");
-            area.style.position = "fixed";
-            area.style.left = "-9999px";
-            document.body.appendChild(area);
-            area.select();
-            document.execCommand("copy");
-            document.body.removeChild(area);
-            done();
-          } catch (err) {
-            window.prompt("Copy this link", text);
-          }
-        }
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(text).then(done).catch(fallback);
-        } else {
-          fallback();
-        }
-      }
-
-      function renderResults(batch) {
-        resultsEl.innerHTML = "";
-        resultCard.classList.toggle("visible", batch.results.length > 0);
-        batch.results.forEach(function (result) {
-          var item = document.createElement("div");
-          item.className = "result-item" + (result.ok ? "" : " failed");
-
-          var meta = document.createElement("p");
-          meta.className = "meta";
-          meta.textContent = result.ok
-            ? (result.productId ? "Product " + result.productId : "Converted")
-            : result.error;
-          item.appendChild(meta);
-
-          var link = document.createElement("div");
-          link.className = "result-link";
-          link.textContent = result.ok ? result.affiliateUrl : result.input;
-          item.appendChild(link);
-
-          if (result.ok) {
-            var actions = document.createElement("div");
-            actions.className = "result-actions";
-            var copy = document.createElement("button");
-            copy.className = "ghost";
-            copy.type = "button";
-            copy.textContent = "Copy link";
-            copy.addEventListener("click", function () {
-              copyText(result.affiliateUrl, copy);
-            });
-            var open = document.createElement("a");
-            open.className = "ghost";
-            open.href = result.affiliateUrl;
-            open.target = "_blank";
-            open.rel = "noopener";
-            open.textContent = "Open";
-            open.style.display = "inline-block";
-            open.style.textDecoration = "none";
-            actions.appendChild(copy);
-            actions.appendChild(open);
-            item.appendChild(actions);
-            pushHistory({
-              affiliateUrl: result.affiliateUrl,
-              productUrl: result.productUrl,
-            });
-          }
-
-          resultsEl.appendChild(item);
-        });
-      }
-
-      function convertNow() {
-        saveTrackingId(trackingInput.value, false);
-        var batch = AliExpressAffiliate.convertMany(sourceInput.value, trackingInput.value);
-        if (!batch.results.length) {
-          resultCard.classList.remove("visible");
-          setStatus(batch.error, "error");
-          return;
-        }
-        renderResults(batch);
-        var okCount = batch.results.filter(function (r) { return r.ok; }).length;
-        if (batch.ok) {
-          setStatus(okCount === 1 ? "Affiliate link ready." : okCount + " affiliate links ready.", "ok");
-        } else if (batch.results.length === 1 && batch.results[0].error) {
-          setStatus(batch.results[0].error, "error");
-        } else {
-          setStatus(batch.error, "error");
-        }
-      }
-
-      saveBtn.addEventListener("click", function () {
-        saveTrackingId(trackingInput.value, true);
-      });
-      trackingInput.addEventListener("change", function () {
-        saveTrackingId(trackingInput.value, false);
-      });
-      convertBtn.addEventListener("click", convertNow);
-      clearBtn.addEventListener("click", function () {
-        sourceInput.value = "";
-        resultsEl.innerHTML = "";
-        resultCard.classList.remove("visible");
-        setStatus("");
-        sourceInput.focus();
-      });
-      sourceInput.addEventListener("keydown", function (event) {
-        if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
-          event.preventDefault();
-          convertNow();
-        }
-      });
-      sourceInput.addEventListener("paste", function () {
-        setTimeout(function () {
-          if (trackingInput.value.trim() && sourceInput.value.trim()) convertNow();
-        }, 0);
-      });
-    })();
-  </script>
+  <script src="app.js"></script>
 </body>
 </html>

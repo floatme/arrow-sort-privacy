@@ -133,3 +133,12 @@ test("extracts a tracking ID from an existing affiliate deep link", function () 
   );
   assert.equal(found, "nY3BAUr");
 });
+
+test("prepares a clean product URL without a tracking ID", function () {
+  var prepared = affiliate.prepareSourceUrl(
+    "www.aliexpress.com/item/1005006123456789.html?spm=a2g0o.detail"
+  );
+  assert.equal(prepared.ok, true);
+  assert.equal(prepared.productId, "1005006123456789");
+  assert.equal(prepared.productUrl, "https://www.aliexpress.com/item/1005006123456789.html");
+});
