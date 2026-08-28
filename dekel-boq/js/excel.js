@@ -1,12 +1,16 @@
-import { chapterOf, formatMoney, lineTotal, normalizeCode } from "./parser.js";
-
+/* Dekel excel export — classic script */
+(function (global) {
+"use strict";
+var chapterOf = global.DekelParser.chapterOf;
+var formatMoney = global.DekelParser.formatMoney;
+var lineTotal = global.DekelParser.lineTotal;
+var normalizeCode = global.DekelParser.normalizeCode;
 /**
  * Export selected BOQ rows to an Excel workbook (SheetJS).
  * @param {object} opts
- * @param {import('./parser.js').DekelItem[]} opts.items
- * @param {object} opts.meta
+ *  * @param {object} opts.meta
  */
-export function exportBoqExcel({ items, meta }) {
+function exportBoqExcel({ items, meta }) {
   if (typeof XLSX === "undefined") {
     throw new Error("ספריית Excel לא נטענה");
   }
@@ -108,3 +112,6 @@ export function exportBoqExcel({ items, meta }) {
 function round2(n) {
   return Math.round((Number(n) || 0) * 100) / 100;
 }
+
+global.DekelExcel = { exportBoqExcel: exportBoqExcel };
+})(typeof window !== "undefined" ? window : globalThis);

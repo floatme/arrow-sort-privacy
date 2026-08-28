@@ -1,9 +1,12 @@
+/* Dekel parser — classic script (no ES modules; works with file://) */
+(function (global) {
+"use strict";
 /**
  * Parsers for Dekel price-list / BOQ content from text, PDF, Excel, DXF.
  */
 
 /** Typical Dekel item code: 01.12.003 or 1.2.3 or 06-01-010 */
-export const CODE_RE = /\b(\d{1,2}[.\-/]\d{1,2}[.\-/]\d{2,4})\b/g;
+const CODE_RE = /\b(\d{1,2}[.\-/]\d{1,2}[.\-/]\d{2,4})\b/g;
 
 /** Units as whole tokens — avoid matching "טון" inside "בטון". */
 const UNIT_TOKEN_RE =
@@ -27,20 +30,20 @@ const NUM_RE = /\d+(?:[.,]\d+)?/g;
  * @property {string} source
  */
 
-export function normalizeCode(code) {
+function normalizeCode(code) {
   return String(code || "")
     .trim()
     .replace(/-/g, ".")
     .replace(/\s+/g, "");
 }
 
-export function chapterOf(code) {
+function chapterOf(code) {
   const n = normalizeCode(code);
   const m = n.match(/^(\d{1,2})/);
   return m ? m[1].padStart(2, "0") : "";
 }
 
-export function makeId() {
+function makeId() {
   return `i_${Math.random().toString(36).slice(2, 10)}_${Date.now().toString(36)}`;
 }
 
@@ -48,7 +51,7 @@ export function makeId() {
  * @param {Partial<DekelItem>} partial
  * @returns {DekelItem}
  */
-export function createItem(partial = {}) {
+function createItem(partial = {}) {
   const code = normalizeCode(partial.code || "");
   return {
     id: partial.id || makeId(),
@@ -109,7 +112,7 @@ function extractTrailingQtyPrice(text) {
  * @param {string} source
  * @returns {DekelItem[]}
  */
-export function parseTextCatalog(text, source = "text") {
+function parseTextCatalog(text, source = "text") {
   const lines = String(text)
     .replace(/\r/g, "")
     .split("\n")
@@ -209,7 +212,7 @@ function mapColumns(headers) {
  * @param {string} source
  * @returns {DekelItem[]}
  */
-export function parseExcelBuffer(buffer, source = "excel") {
+function parseExcelBuffer(buffer, source = "excel") {
   if (typeof XLSX === "undefined") {
     throw new Error("ספריית Excel לא נטענה");
   }
@@ -273,7 +276,7 @@ export function parseExcelBuffer(buffer, source = "excel") {
  * Extract TEXT entities from DXF.
  * @param {string} dxf
  */
-export function parseDxfText(dxf) {
+function parseDxfText(dxf) {
   const lines = String(dxf).replace(/\r/g, "").split("\n");
   const texts = [];
   for (let i = 0; i < lines.length - 1; i++) {
@@ -296,7 +299,7 @@ export function parseDxfText(dxf) {
  * Best-effort string scrape from DWG binary (often weak).
  * @param {ArrayBuffer} buffer
  */
-export function scrapeDwgStrings(buffer) {
+function scrapeDwgStrings(buffer) {
   const bytes = new Uint8Array(buffer);
   const chunks = [];
   let cur = [];
@@ -321,22 +324,39 @@ export function scrapeDwgStrings(buffer) {
  * Read PDF text via pdf.js
  * @param {ArrayBuffer} buffer
  */
-export async function extractPdfText(buffer) {
-  const pdfjs = await import(
-    "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.mjs"
-  );
-  pdfjs.GlobalWorkerOptions.workerSrc =
-    "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.min.mjs";
-
-  const doc = await pdfjs.getDocument({ data: buffer }).promise;
-  const parts = [];
-  for (let p = 1; p <= doc.numPages; p++) {
-    const page = await doc.getPage(p);
-    const content = await page.getTextContent();
-    const line = content.items.map((it) => ("str" in it ? it.str : "")).join(" ");
-    parts.push(line);
+async function extractPdfText(buffer) {
+  const pdfjs = global.pdfjsLib || window.pdfjsLib;
+  if (!pdfjs) {
+    throw new Error("ספריית PDF לא נטענה");
   }
-  return parts.join("\n");
+  const base = (typeof window !== "undefined" && window.location && window.location.href) || "";
+  const workerCandidates = [
+    base ? new URL("vendor/pdf.worker.min.js", base).href : "vendor/pdf.worker.min.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js",
+  ];
+
+  async function readAllPages(data) {
+    const doc = await pdfjs.getDocument({ data: data }).promise;
+    const parts = [];
+    for (let p = 1; p <= doc.numPages; p++) {
+      const page = await doc.getPage(p);
+      const content = await page.getTextContent();
+      const line = content.items.map(function (it) { return it && it.str ? it.str : ""; }).join(" ");
+      parts.push(line);
+    }
+    return parts.join("\n");
+  }
+
+  var lastErr;
+  for (var i = 0; i < workerCandidates.length; i++) {
+    try {
+      pdfjs.GlobalWorkerOptions.workerSrc = workerCandidates[i];
+      return await readAllPages(buffer);
+    } catch (err) {
+      lastErr = err;
+    }
+  }
+  throw lastErr || new Error("כשל בקריאת PDF");
 }
 
 /**
@@ -344,7 +364,7 @@ export async function extractPdfText(buffer) {
  * @param {DekelItem[]} catalog
  * @param {DekelItem[]} quantities
  */
-export function applyQuantities(catalog, quantities) {
+function applyQuantities(catalog, quantities) {
   const qmap = new Map(quantities.map((q) => [normalizeCode(q.code), q]));
   return catalog.map((item) => {
     const q = qmap.get(item.code);
@@ -364,7 +384,7 @@ export function applyQuantities(catalog, quantities) {
  * Sample Dekel-like catalog for demo.
  * @returns {DekelItem[]}
  */
-export function sampleCatalog() {
+function sampleCatalog() {
   const rows = [
     ["01.01.001", "חפירה בקרקע רגילה עד עומק 1.5 מ'", 'מ"ק', 185, 42],
     ["01.01.015", "מילוי מהודק בחול מדברי", 'מ"ק', 320, 95],
@@ -382,7 +402,7 @@ export function sampleCatalog() {
   );
 }
 
-export function lineTotal(item, indexFactor = 1, globalDiscount = 0) {
+function lineTotal(item, indexFactor = 1, globalDiscount = 0) {
   const price = (Number(item.unitPrice) || 0) * (Number(indexFactor) || 1);
   const disc = Math.min(100, Math.max(0, Number(item.discount) || 0));
   const gdisc = Math.min(100, Math.max(0, Number(globalDiscount) || 0));
@@ -391,10 +411,28 @@ export function lineTotal(item, indexFactor = 1, globalDiscount = 0) {
   return (Number(item.qty) || 0) * afterGlobal;
 }
 
-export function formatMoney(n) {
+function formatMoney(n) {
   return new Intl.NumberFormat("he-IL", {
     style: "currency",
     currency: "ILS",
     maximumFractionDigits: 2,
   }).format(Number(n) || 0);
 }
+
+global.DekelParser = {
+  CODE_RE: CODE_RE,
+  normalizeCode: normalizeCode,
+  chapterOf: chapterOf,
+  makeId: makeId,
+  createItem: createItem,
+  parseTextCatalog: parseTextCatalog,
+  parseExcelBuffer: parseExcelBuffer,
+  parseDxfText: parseDxfText,
+  scrapeDwgStrings: scrapeDwgStrings,
+  extractPdfText: extractPdfText,
+  applyQuantities: applyQuantities,
+  sampleCatalog: sampleCatalog,
+  lineTotal: lineTotal,
+  formatMoney: formatMoney
+};
+})(typeof window !== "undefined" ? window : globalThis);
