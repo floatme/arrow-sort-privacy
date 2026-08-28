@@ -3,153 +3,499 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>2048 Neon (Neon 2048) — Privacy Policy | PoofAI</title>
-  <meta name="description" content="Privacy Policy for the Android app 2048 Neon (also listed as Neon 2048), package com.arrowsort.puzzle, published by PoofAI." />
+  <title>AliExpress Affiliate Link Converter</title>
+  <meta name="description" content="Paste an AliExpress product link and turn it into an affiliate link tagged with your Tracking ID. Runs in your browser." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,680&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
-    :root { color-scheme: light; }
+    :root {
+      --ink: #1b1510;
+      --paper: #f3ece2;
+      --card: #fffaf3;
+      --line: #e3d5c5;
+      --muted: #6d6156;
+      --accent: #c13b24;
+      --accent-hover: #a8301d;
+      --ok: #246b48;
+      --ok-bg: #e8f4ec;
+      --warn: #8a3b12;
+      --warn-bg: #fbeee6;
+      --shadow: 0 18px 40px rgba(60, 36, 18, 0.08);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; }
     body {
-      margin: 0;
-      font-family: Georgia, "Times New Roman", serif;
-      background: #f7f3eb;
-      color: #1c1a17;
-      line-height: 1.6;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(1200px 500px at 10% -10%, #fbe3c8 0%, transparent 55%),
+        radial-gradient(900px 400px at 110% 0%, #f3cfc0 0%, transparent 50%),
+        var(--paper);
+      font-family: "Source Sans 3", system-ui, sans-serif;
+      line-height: 1.5;
     }
-    main {
-      max-width: 720px;
+
+    .wrap {
+      width: min(760px, calc(100% - 32px));
       margin: 0 auto;
-      padding: 48px 24px 80px;
+      padding: 40px 0 72px;
     }
-    h1 { font-size: 2.1rem; color: #2f6f5e; margin-bottom: 0.25rem; }
-    h2 { font-size: 1.25rem; margin-top: 2rem; }
-    .meta { color: #5a554e; font-family: system-ui, sans-serif; font-size: 0.95rem; }
-    a { color: #2f6f5e; }
-    ul { padding-left: 1.2rem; }
+
+    header h1 {
+      font-family: Fraunces, Georgia, serif;
+      font-size: clamp(2rem, 5vw, 3.1rem);
+      font-weight: 680;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      margin: 0 0 12px;
+    }
+    header p.lede {
+      margin: 0 0 28px;
+      color: var(--muted);
+      font-size: 1.08rem;
+      max-width: 42rem;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px;
+      margin-bottom: 16px;
+    }
+    .card h2 {
+      margin: 0 0 6px;
+      font-size: 0.82rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    label.field {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    input[type="text"], textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font: inherit;
+      font-size: 1rem;
+    }
+    input[type="text"]:focus, textarea:focus {
+      outline: 3px solid rgba(193, 59, 36, 0.25);
+      border-color: var(--accent);
+    }
+    textarea {
+      min-height: 132px;
+      resize: vertical;
+      line-height: 1.45;
+    }
+    .hint {
+      color: var(--muted);
+      font-size: 0.92rem;
+      margin: 8px 0 0;
+    }
+    .row {
+      display: flex;
+      gap: 10px;
+      align-items: stretch;
+    }
+    .row input { flex: 1; }
+
+    button {
+      font: inherit;
+      font-weight: 700;
+      border: 0;
+      cursor: pointer;
+      border-radius: 12px;
+    }
+    .primary {
+      background: var(--accent);
+      color: #fff;
+      padding: 12px 18px;
+    }
+    .primary:hover { background: var(--accent-hover); }
+    .primary:disabled {
+      background: #c9b8aa;
+      cursor: not-allowed;
+    }
+    .ghost {
+      background: #fff;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      padding: 12px 14px;
+    }
+    .ghost:hover { background: #f7f0e7; }
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    details.help {
+      margin-top: 12px;
+    }
+    details.help summary {
+      cursor: pointer;
+      color: var(--accent);
+      font-weight: 600;
+    }
+    details.help ol {
+      margin: 10px 0 0;
+      padding-left: 1.2rem;
+      color: var(--muted);
+    }
+    details.help a { color: var(--accent); }
+
+    .status {
+      display: none;
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+    .status.error {
+      display: block;
+      background: var(--warn-bg);
+      color: var(--warn);
+    }
+    .status.ok {
+      display: block;
+      background: var(--ok-bg);
+      color: var(--ok);
+    }
+
+    .result {
+      display: none;
+    }
+    .result.visible { display: block; }
+    .result-item {
+      border-top: 1px solid var(--line);
+      padding: 16px 0 4px;
+    }
+    .result-item:first-child { border-top: 0; padding-top: 0; }
+    .result-link {
+      word-break: break-all;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin: 8px 0 10px;
+      font-size: 0.95rem;
+    }
+    .result-item.failed .result-link {
+      background: var(--warn-bg);
+      border-color: #efd2c2;
+    }
+    .meta {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin: 0 0 8px;
+    }
+    .result-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .result-actions .ghost { padding: 8px 12px; font-size: 0.92rem; }
+
+    .history-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .history-list li {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--line);
+      font-size: 0.95rem;
+    }
+    .history-list a {
+      color: var(--ink);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .history-list button {
+      background: none;
+      color: var(--accent);
+      padding: 0;
+      font-weight: 600;
+    }
+
+    footer {
+      margin-top: 28px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+    footer a { color: var(--accent); }
+
+    @media (max-width: 560px) {
+      .wrap { padding-top: 24px; }
+      .row { flex-direction: column; }
+    }
   </style>
 </head>
 <body>
-  <main>
-    <h1>Privacy Policy for 2048 Neon</h1>
-    <p class="meta">
-      Also known on Google Play as <strong>Neon 2048</strong><br />
-      Android package name: <strong>com.arrowsort.puzzle</strong><br />
-      Developer / publisher on Google Play: <strong>PoofAI</strong><br />
-      Effective date: August 4, 2026<br />
-      Privacy contact email: <a href="mailto:ollamaclient@gmail.com">ollamaclient@gmail.com</a>
-    </p>
+  <div class="wrap">
+    <header>
+      <h1>Turn any AliExpress link into yours.</h1>
+      <p class="lede">
+        Paste a product URL. This page wraps it with your AliExpress Tracking ID
+        and gives you an affiliate link. Everything stays in your browser.
+      </p>
+    </header>
 
-    <p>
-      This Privacy Policy applies to the mobile application <strong>2048 Neon</strong>
-      (listed on Google Play as <strong>Neon 2048</strong>; Android package
-      <strong>com.arrowsort.puzzle</strong>), published by <strong>PoofAI</strong>
-      (“we”, “us”, or “the developer”). It explains what information is processed
-      when you use the App on Google Play / Android.
-    </p>
+    <section class="card">
+      <h2>Your account</h2>
+      <label class="field" for="trackingId">Tracking ID</label>
+      <div class="row">
+        <input id="trackingId" type="text" autocomplete="off" spellcheck="false" placeholder="e.g. default or nY3BAUr" />
+        <button class="ghost" id="saveTracking" type="button">Save</button>
+      </div>
+      <p class="hint">Saved only on this device. You can also paste an existing affiliate deep link to detect the ID.</p>
+      <details class="help">
+        <summary>Where do I find my Tracking ID?</summary>
+        <ol>
+          <li>Sign in at <a href="https://portals.aliexpress.com/" rel="noopener">portals.aliexpress.com</a> (AliExpress Affiliate / Star).</li>
+          <li>Open <strong>Account</strong> (or Settings) → <strong>Tracking ID</strong>.</li>
+          <li>Create one if you do not have it yet, then paste that ID here.</li>
+          <li>If you already have an affiliate link that looks like <code>s.click.aliexpress.com/deep_link.htm?aff_short_key=...</code>, paste it here and we will pull the key out.</li>
+        </ol>
+      </details>
+    </section>
 
-    <h2>Who we are</h2>
-    <p>
-      The App is published on Google Play by the developer account <strong>PoofAI</strong>.
-      For privacy questions about this App, contact us at
-      <a href="mailto:ollamaclient@gmail.com">ollamaclient@gmail.com</a>
-      (the contact email shown on the Google Play store listing).
-    </p>
+    <section class="card">
+      <h2>Convert</h2>
+      <label class="field" for="sourceUrls">AliExpress link</label>
+      <textarea id="sourceUrls" placeholder="https://www.aliexpress.com/item/1005001234567890.html&#10;&#10;One link per line if you have several."></textarea>
+      <div class="actions">
+        <button class="primary" id="convertBtn" type="button">Convert</button>
+        <button class="ghost" id="clearBtn" type="button">Clear</button>
+      </div>
+      <p class="hint">Works with product pages, mobile links, regional domains, and existing deep links. Short <code>s.click.aliexpress.com/e/...</code> links need the original product URL.</p>
+      <div id="status" class="status" role="status"></div>
+    </section>
 
-    <h2>Information we collect and process</h2>
-    <p>
-      The App does not require you to create an account and does not ask you for your
-      name, email address, phone number, or contacts.
-    </p>
-    <p>We process the following categories of data in connection with the App:</p>
-    <ul>
-      <li>
-        <strong>Local game data (on your device):</strong> progress such as scores,
-        best score, daily streak, undo balances, board mode preferences, and whether
-        you purchased “Remove Ads”. This data stays on your device unless you clear
-        app data or uninstall.
-      </li>
-      <li>
-        <strong>Advertising / device data (via Google AdMob and partners):</strong>
-        when ads are enabled, Google and its advertising partners may collect and
-        process device identifiers (including the Android advertising ID), IP address,
-        approximate location derived from IP, device and app information, and
-        interactions with ads in order to serve, measure, and (where permitted)
-        personalize advertising.
-      </li>
-      <li>
-        <strong>Purchase data (via Google Play):</strong> if you buy “Remove Ads” or
-        other in-app products, Google Play processes the transaction. We receive
-        purchase entitlement status (for example, that ads were removed). We do not
-        receive your full payment card details.
-      </li>
-    </ul>
+    <section class="card result" id="resultCard">
+      <h2>Affiliate link</h2>
+      <div id="results"></div>
+    </section>
 
-    <h2>Advertising</h2>
-    <p>
-      Unless you purchase Remove Ads, the App displays ads served by
-      <strong>Google AdMob</strong>. Google’s processing of advertising-related data
-      is described in
-      <a href="https://policies.google.com/privacy" rel="noopener">Google’s Privacy Policy</a>
-      and
-      <a href="https://support.google.com/admob/answer/6128543" rel="noopener">AdMob help</a>.
-    </p>
-    <p>
-      On Android, you can reset or limit your advertising ID in system settings.
-      In regions that require it (such as the EEA/UK/Switzerland), a consent form may
-      be shown before personalized ads are requested.
-    </p>
+    <section class="card" id="historyCard" hidden>
+      <h2>Recent conversions</h2>
+      <ul class="history-list" id="historyList"></ul>
+    </section>
 
-    <h2>Analytics and crash diagnostics</h2>
-    <p>
-      The App may receive basic technical diagnostics through Google Play services
-      (for example app version, device model, or crash information) to keep the App
-      stable. We do not use a separate third-party analytics SDK beyond Google Play /
-      AdMob as described here. If we add additional analytics later, this policy will
-      be updated before or when that change ships.
-    </p>
+    <footer>
+      Uses AliExpress deep links (<code>s.click.aliexpress.com/deep_link.htm</code>) with your Tracking ID.
+      You need an approved affiliate account for commissions to track.
+      The 2048 Neon privacy policy is still at
+      <a href="privacy.html">privacy.html</a>.
+    </footer>
+  </div>
 
-    <h2>In-app purchases</h2>
-    <p>
-      Optional purchases such as “Remove Ads” are processed by Google Play Billing.
-      Google’s handling of payment information is governed by Google’s policies.
-      Purchase status may be stored locally on your device and restored through Play.
-    </p>
+  <script src="converter.js"></script>
+  <script>
+    (function () {
+      var STORAGE_KEY = "ae-aff-tracking-id";
+      var HISTORY_KEY = "ae-aff-history";
+      var trackingInput = document.getElementById("trackingId");
+      var saveBtn = document.getElementById("saveTracking");
+      var sourceInput = document.getElementById("sourceUrls");
+      var convertBtn = document.getElementById("convertBtn");
+      var clearBtn = document.getElementById("clearBtn");
+      var statusEl = document.getElementById("status");
+      var resultCard = document.getElementById("resultCard");
+      var resultsEl = document.getElementById("results");
+      var historyCard = document.getElementById("historyCard");
+      var historyList = document.getElementById("historyList");
 
-    <h2>Children</h2>
-    <p>
-      The App is not directed to children under 13 (or the equivalent minimum age in
-      your country). We do not knowingly collect personal information from children.
-    </p>
+      trackingInput.value = localStorage.getItem(STORAGE_KEY) || "";
+      renderHistory();
 
-    <h2>Data retention and deletion</h2>
-    <p>
-      Local game data remains on your device until you clear storage for the App or
-      uninstall it. Advertising and purchase partners retain data according to their
-      own policies. To stop local processing, uninstall the App. For privacy requests
-      related to this App, email
-      <a href="mailto:ollamaclient@gmail.com">ollamaclient@gmail.com</a>.
-    </p>
+      function setStatus(message, kind) {
+        statusEl.className = "status " + (kind || "");
+        statusEl.textContent = message || "";
+        statusEl.style.display = message ? "block" : "none";
+      }
 
-    <h2>Your choices</h2>
-    <ul>
-      <li>Uninstall the App to stop local processing on your device.</li>
-      <li>Use Android advertising ID controls to limit ad personalization.</li>
-      <li>Purchase Remove Ads (where offered) to stop showing ads in the App.</li>
-      <li>Contact <a href="mailto:ollamaclient@gmail.com">ollamaclient@gmail.com</a> with privacy questions.</li>
-    </ul>
+      function saveTrackingId(value, announce) {
+        var detected = AliExpressAffiliate.extractTrackingIdFromLink(value);
+        var id = (detected || value || "").trim();
+        trackingInput.value = id;
+        if (!id) {
+          localStorage.removeItem(STORAGE_KEY);
+          if (announce) setStatus("Tracking ID cleared.", "ok");
+          return;
+        }
+        if (!/^[A-Za-z0-9_-]{2,64}$/.test(id)) {
+          setStatus("That Tracking ID looks invalid.", "error");
+          return;
+        }
+        localStorage.setItem(STORAGE_KEY, id);
+        if (announce) {
+          setStatus(detected ? "Tracking ID detected and saved." : "Tracking ID saved on this device.", "ok");
+        }
+      }
 
-    <h2>Changes</h2>
-    <p>
-      We may update this Privacy Policy as the App or legal requirements change.
-      The effective date at the top will be revised when material changes are made.
-      Continued use of the App after an update means you accept the revised policy.
-    </p>
+      function history() {
+        try {
+          return JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
+        } catch (err) {
+          return [];
+        }
+      }
 
-    <h2>Contact</h2>
-    <p>
-      Developer: <strong>PoofAI</strong><br />
-      App: <strong>2048 Neon</strong> / <strong>Neon 2048</strong>
-      (<code>com.arrowsort.puzzle</code>)<br />
-      Email: <a href="mailto:ollamaclient@gmail.com">ollamaclient@gmail.com</a>
-    </p>
-  </main>
+      function pushHistory(entry) {
+        var items = history().filter(function (item) {
+          return item.affiliateUrl !== entry.affiliateUrl;
+        });
+        items.unshift(entry);
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(items.slice(0, 8)));
+        renderHistory();
+      }
+
+      function renderHistory() {
+        var items = history();
+        historyCard.hidden = items.length === 0;
+        historyList.innerHTML = "";
+        items.forEach(function (item) {
+          var li = document.createElement("li");
+          var a = document.createElement("a");
+          a.href = item.affiliateUrl;
+          a.target = "_blank";
+          a.rel = "noopener";
+          a.textContent = item.productUrl || item.affiliateUrl;
+          var copy = document.createElement("button");
+          copy.type = "button";
+          copy.textContent = "Copy";
+          copy.addEventListener("click", function () {
+            copyText(item.affiliateUrl, copy);
+          });
+          li.appendChild(a);
+          li.appendChild(copy);
+          historyList.appendChild(li);
+        });
+      }
+
+      function copyText(text, button) {
+        var original = button.textContent;
+        function done() {
+          button.textContent = "Copied";
+          setTimeout(function () { button.textContent = original; }, 1200);
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(done).catch(function () {
+            window.prompt("Copy this link", text);
+          });
+        } else {
+          window.prompt("Copy this link", text);
+        }
+      }
+
+      function renderResults(batch) {
+        resultsEl.innerHTML = "";
+        resultCard.classList.toggle("visible", batch.results.length > 0);
+        batch.results.forEach(function (result) {
+          var item = document.createElement("div");
+          item.className = "result-item" + (result.ok ? "" : " failed");
+
+          var meta = document.createElement("p");
+          meta.className = "meta";
+          meta.textContent = result.ok
+            ? (result.productId ? "Product " + result.productId : "Converted")
+            : result.error;
+          item.appendChild(meta);
+
+          var link = document.createElement("div");
+          link.className = "result-link";
+          link.textContent = result.ok ? result.affiliateUrl : result.input;
+          item.appendChild(link);
+
+          if (result.ok) {
+            var actions = document.createElement("div");
+            actions.className = "result-actions";
+            var copy = document.createElement("button");
+            copy.className = "ghost";
+            copy.type = "button";
+            copy.textContent = "Copy link";
+            copy.addEventListener("click", function () {
+              copyText(result.affiliateUrl, copy);
+            });
+            var open = document.createElement("a");
+            open.className = "ghost";
+            open.href = result.affiliateUrl;
+            open.target = "_blank";
+            open.rel = "noopener";
+            open.textContent = "Open";
+            open.style.display = "inline-block";
+            open.style.textDecoration = "none";
+            actions.appendChild(copy);
+            actions.appendChild(open);
+            item.appendChild(actions);
+            pushHistory({
+              affiliateUrl: result.affiliateUrl,
+              productUrl: result.productUrl,
+            });
+          }
+
+          resultsEl.appendChild(item);
+        });
+      }
+
+      function convertNow() {
+        saveTrackingId(trackingInput.value, false);
+        var batch = AliExpressAffiliate.convertMany(sourceInput.value, trackingInput.value);
+        if (!batch.results.length) {
+          resultCard.classList.remove("visible");
+          setStatus(batch.error, "error");
+          return;
+        }
+        renderResults(batch);
+        var okCount = batch.results.filter(function (r) { return r.ok; }).length;
+        if (batch.ok) {
+          setStatus(okCount === 1 ? "Affiliate link ready." : okCount + " affiliate links ready.", "ok");
+        } else {
+          setStatus(batch.error, "error");
+        }
+      }
+
+      saveBtn.addEventListener("click", function () {
+        saveTrackingId(trackingInput.value, true);
+      });
+      trackingInput.addEventListener("change", function () {
+        saveTrackingId(trackingInput.value, false);
+      });
+      convertBtn.addEventListener("click", convertNow);
+      clearBtn.addEventListener("click", function () {
+        sourceInput.value = "";
+        resultsEl.innerHTML = "";
+        resultCard.classList.remove("visible");
+        setStatus("");
+        sourceInput.focus();
+      });
+      sourceInput.addEventListener("keydown", function (event) {
+        if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
+          event.preventDefault();
+          convertNow();
+        }
+      });
+      sourceInput.addEventListener("paste", function () {
+        setTimeout(function () {
+          if (trackingInput.value.trim() && sourceInput.value.trim()) convertNow();
+        }, 0);
+      });
+    })();
+  </script>
 </body>
 </html>
