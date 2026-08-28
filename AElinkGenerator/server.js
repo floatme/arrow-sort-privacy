@@ -1,5 +1,6 @@
 "use strict";
 
+const os = require("os");
 const path = require("path");
 const express = require("express");
 const affiliate = require("./converter.js");
@@ -138,10 +139,14 @@ async function start(env) {
   });
   const port = Number(config.PORT || 3000);
   const server = app.listen(port, "0.0.0.0", () => {
-    console.log("AElinkGenerator website: http://localhost:" + port);
+    console.log("Website on this PC: http://localhost:" + port);
+    lanAddresses().forEach((ip) => {
+      console.log("Same Wi-Fi:        http://" + ip + ":" + port);
+    });
     if (generator.mode === "portals") {
       console.log("Sign in to AliExpress Portals in the Chrome window if prompted.");
-      console.log("That session is refreshed every 25 minutes so it stays logged in.");
+      console.log("Leave this window and that Chrome profile running. It refreshes every 25 minutes.");
+      console.log("Keep the PC awake (plugged in, sleep set to Never).");
     } else {
       console.log("Using AliExpress Affiliate API credentials.");
     }
@@ -154,6 +159,18 @@ if (require.main === module) {
     console.error(err);
     process.exit(1);
   });
+}
+
+function lanAddresses() {
+  const out = [];
+  const ifaces = os.networkInterfaces();
+  Object.keys(ifaces).forEach((name) => {
+    (ifaces[name] || []).forEach((iface) => {
+      const family = iface.family === 4 || iface.family === "IPv4";
+      if (family && !iface.internal) out.push(iface.address);
+    });
+  });
+  return out;
 }
 
 module.exports = { createApp, start, hasApiCredentials };

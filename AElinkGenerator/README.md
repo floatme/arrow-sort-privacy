@@ -1,42 +1,39 @@
-# AElinkGenerator
+# AElinkGenerator (desktop)
 
-Public website: anyone pastes an AliExpress product URL. The server generates the affiliate link with **your** AliExpress Portals account and returns it to the page.
+Run this on your Windows PC. The website uses your signed-in AliExpress Portals Link Generator and returns affiliate links to anyone who opens the page.
 
-Local folder: `c:\AI\AElinkGenerator\`
+Put the files in `c:\AI\AElinkGenerator\`.
 
-## Run the website
+## Once
+
+1. Install Node.js LTS from https://nodejs.org (leave the PATH checkbox on).
+2. Confirm Google Chrome is installed.
+3. Copy this folder to `c:\AI\AElinkGenerator\`.
+
+## Every time you want the site live
+
+1. Double-click `open.bat`.
+2. Leave that black window open.
+3. In the Chrome window that opens, sign in to Portals if it asks.
+4. Open http://localhost:3000 and paste an AliExpress product URL.
+
+The script stops the PC from sleeping while it runs. Still plug the PC in, and in Windows set **Sleep → Never** when you want it on overnight.
+
+If the PC reboots, run `open.bat` again. You usually stay logged in.
+
+## Other devices on your Wi-Fi
+
+The console prints a `http://192.168.x.x:3000` address. Phones on the same network can use that.
+
+## Anyone on the internet
+
+Your desktop is not public by default. Easiest free option: [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/). While `open.bat` is running:
 
 ```
-cd c:\AI\AElinkGenerator
-npm install
-npm start
+cloudflared tunnel --url http://localhost:3000
 ```
 
-Or double-click `open.bat`.
-
-Open http://localhost:3000
-
-On first start, Chrome opens the official generator:
-
-https://portals.aliexpress.com/affiportals/web/link_generator.htm
-
-Sign in with your affiliate account once. The server keeps that tab/session alive by refreshing it every 25 minutes.
-
-Visitors never see Portals. They only use your website.
-
-## Host it for anyone
-
-The site is this Node app, not a static page. Keep the process running on a machine that can stay signed in to Portals (your PC, a VPS with Chrome, etc.). Point a domain at port 3000 if you want a public URL.
-
-For 24/7 hosting without Chrome, create AliExpress Affiliate API credentials in Portals and put them in `.env`:
-
-```
-ALIEXPRESS_APP_KEY=...
-ALIEXPRESS_APP_SECRET=...
-ALIEXPRESS_TRACKING_ID=...
-```
-
-Then `npm start` uses the official API instead of the browser.
+Share the `https://...trycloudflare.com` URL it prints.
 
 ## Tests
 
