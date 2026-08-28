@@ -4,6 +4,8 @@ Run this on your Windows PC. The website uses your signed-in AliExpress Portals 
 
 Put the files in `c:\AI\AElinkGenerator\`.
 
+Full walkthrough (including Cloudflare): see **[PLAN.md](PLAN.md)**.
+
 ## Once
 
 1. Install Node.js LTS from https://nodejs.org (leave the PATH checkbox on).

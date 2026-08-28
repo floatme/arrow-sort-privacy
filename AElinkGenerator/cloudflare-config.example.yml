@@ -1,0 +1,13 @@
+# Copy this file to %USERPROFILE%\.cloudflared\config.yml
+# then replace the three YOUR_* values.
+#
+# tunnel id comes from: cloudflared tunnel create aelinkgenerator
+# credentials json is created in %USERPROFILE%\.cloudflared\
+
+tunnel: YOUR_TUNNEL_ID
+credentials-file: C:\Users\YOUR_WINDOWS_USERNAME\.cloudflared\YOUR_TUNNEL_ID.json
+
+ingress:
+  - hostname: links.yourdomain.com
+    service: http://127.0.0.1:3000
+  - service: http_status:404
