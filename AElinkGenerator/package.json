@@ -1,0 +1,17 @@
+{
+  "name": "aelinkgenerator",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Public website that converts AliExpress URLs with one operator's Portals affiliate account.",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test converter.test.js server.test.js affiliate-api.test.js portals.test.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "playwright-core": "^1.55.0"
+  }
+}

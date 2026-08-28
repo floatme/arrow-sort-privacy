@@ -1,26 +1,45 @@
 # AElinkGenerator
 
+Public website: anyone pastes an AliExpress product URL. The server generates the affiliate link with **your** AliExpress Portals account and returns it to the page.
+
 Local folder: `c:\AI\AElinkGenerator\`
 
-This is a Chrome extension. It uses the official AliExpress Portals page you already have open:
+## Run the website
+
+```
+cd c:\AI\AElinkGenerator
+npm install
+npm start
+```
+
+Or double-click `open.bat`.
+
+Open http://localhost:3000
+
+On first start, Chrome opens the official generator:
 
 https://portals.aliexpress.com/affiportals/web/link_generator.htm
 
-It fills that page, clicks **Get Tracking Link**, and copies the affiliate URL. It also refreshes that tab every 25 minutes so Portals does not log you out.
+Sign in with your affiliate account once. The server keeps that tab/session alive by refreshing it every 25 minutes.
 
-## Install
+Visitors never see Portals. They only use your website.
 
-1. Copy this folder to `c:\AI\AElinkGenerator\`
-2. In Chrome open `chrome://extensions`
-3. Enable **Developer mode**
-4. **Load unpacked** → select `c:\AI\AElinkGenerator\`
-5. Keep the Link Generator tab open and logged in
-6. Click the AElinkGenerator toolbar icon, paste a product URL, Convert
+## Host it for anyone
 
-Or run `open.bat`.
+The site is this Node app, not a static page. Keep the process running on a machine that can stay signed in to Portals (your PC, a VPS with Chrome, etc.). Point a domain at port 3000 if you want a public URL.
 
-## Notes
+For 24/7 hosting without Chrome, create AliExpress Affiliate API credentials in Portals and put them in `.env`:
 
-- The first load does not need a Tracking ID field here. Portals already knows your account from the logged-in tab.
-- If Chrome was already on the generator, you do not need to log in again.
-- If a convert fails, refresh the Portals tab once and retry.
+```
+ALIEXPRESS_APP_KEY=...
+ALIEXPRESS_APP_SECRET=...
+ALIEXPRESS_TRACKING_ID=...
+```
+
+Then `npm start` uses the official API instead of the browser.
+
+## Tests
+
+```
+npm test
+```
