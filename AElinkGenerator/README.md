@@ -5,7 +5,7 @@ Run this on your Windows PC. The website uses your signed-in AliExpress Portals 
 Put the files in `c:\AI\AElinkGenerator\`.
 
 Full walkthrough (including Cloudflare): see **[PLAN.md](PLAN.md)**.  
-Namecheap domain **helpmegetaround.com**: see **[NAMECHEAP-CLOUDFLARE.md](NAMECHEAP-CLOUDFLARE.md)**.
+Connect **helpmegetaround.com**: run **`connect-helpmegetaround.bat`** or see **[CONNECT.md](CONNECT.md)**.
 
 ## Once
 
