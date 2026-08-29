@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Help Me Get Around — AliExpress Link Converter</title>
+  <meta name="description" content="Convert an AliExpress product link at no extra cost and help fund an accessible EZ Raider." />
+  <style>
+    :root {
+      --ink: #111331;
+      --paper: #120d35;
+      --card: #fffdf7;
+      --line: #b8b9e8;
+      --muted: #4f4e72;
+      --accent: #f13c22;
+      --accent-hover: #c91f12;
+      --blue: #005f84;
+      --blue-light: #b8f2ff;
+      --ok: #075c3d;
+      --ok-bg: #a9f4cf;
+      --warn: #7b2500;
+      --warn-bg: #ffd4a3;
+      --shadow: 0 20px 46px rgba(5, 2, 40, 0.34), 0 4px 0 rgba(255, 92, 45, 0.28);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; }
+    body {
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(900px 540px at 8% -8%, #ff3b30 0%, rgba(255,59,48,.15) 48%, transparent 70%),
+        radial-gradient(950px 520px at 105% 5%, #00c9ff 0%, rgba(0,201,255,.16) 48%, transparent 70%),
+        linear-gradient(145deg, #120d35 0%, #2a1261 48%, #071f4c 100%);
+      background-attachment: fixed;
+      font-family: "Segoe UI", "Helvetica Neue", Arial, "Noto Sans Hebrew", "Arial Hebrew", sans-serif;
+      line-height: 1.5;
+    }
+    .language-bar {
+      align-items: center;
+      background: rgba(7, 8, 42, .8);
+      border: 1px solid rgba(255,255,255,.28);
+      border-radius: 14px;
+      color: #fff;
+      display: flex;
+      gap: 12px;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      padding: 10px 14px;
+    }
+    .language-bar strong { color: #ffcf35; }
+    .lang-toggle { display: flex; gap: 8px; }
+    .lang-toggle button {
+      background: #fff;
+      border: 2px solid #61cbea;
+      border-radius: 8px;
+      color: #111331;
+      font: inherit;
+      font-weight: 700;
+      min-width: 96px;
+      padding: 6px 12px;
+    }
+    .lang-toggle button.is-active,
+    .lang-toggle button[aria-pressed="true"] {
+      background: #ffcf35;
+      border-color: #ffcf35;
+      color: #1a1238;
+    }
+    .wrap { width: min(780px, calc(100% - 32px)); margin: 0 auto; padding: 48px 0 72px; }
+    h1 {
+      font-family: Georgia, "Times New Roman", "Noto Serif Hebrew", serif;
+      font-size: clamp(2rem, 5vw, 3rem);
+      letter-spacing: -0.03em;
+      line-height: 1.08;
+      margin: 0 0 12px;
+    }
+    html[dir="rtl"] h1,
+    html[dir="rtl"] .story h2,
+    html[dir="rtl"] .progress-card h2,
+    html[dir="rtl"] .benefits h2,
+    html[dir="rtl"] .result-title {
+      letter-spacing: 0;
+    }
+    .lede { color: var(--muted); font-size: 1.08rem; margin: 0 0 28px; max-width: 40rem; }
+    header h1 { color: #fff; text-shadow: 0 4px 22px rgba(0,0,0,.36); }
+    header .lede { color: #d9e8ff; }
+    .eyebrow { color: #ffb12b; font-size: .82rem; font-weight: 900; letter-spacing: .14em; margin: 0 0 10px; text-transform: uppercase; }
+    html[dir="rtl"] .eyebrow { letter-spacing: .06em; }
+    .card {
+      background: var(--card);
+      border: 2px solid rgba(255,255,255,.72);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 22px;
+      margin-bottom: 16px;
+    }
+    label { display: block; font-weight: 600; margin-bottom: 8px; }
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font: inherit;
+      resize: vertical;
+    }
+    textarea:focus { outline: 3px solid rgba(193, 59, 36, 0.25); border-color: var(--accent); }
+    .actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+    button {
+      font: inherit;
+      font-weight: 700;
+      border: 0;
+      border-radius: 12px;
+      cursor: pointer;
+      padding: 12px 18px;
+    }
+    .primary { background: linear-gradient(135deg, #ff5a24, #e31837); color: #fff; box-shadow: 0 8px 20px rgba(227,24,55,.3); }
+    .primary:hover { background: var(--accent-hover); }
+    .primary:disabled { background: #c9b8aa; cursor: not-allowed; }
+    .ghost { background: #e9faff; border: 2px solid #61cbea; color: #073e5d; }
+    .hint { color: var(--muted); font-size: 0.92rem; margin: 10px 0 0; }
+    .status { display: none; margin-top: 12px; padding: 10px 12px; border-radius: 10px; font-weight: 600; }
+    .status.ok { display: block; background: var(--ok-bg); color: var(--ok); }
+    .status.error { display: block; background: var(--warn-bg); color: var(--warn); }
+    .status.thanks { display: block; background: #e8f0ff; color: #243a6b; border: 1px solid #9bb6ef; }
+    .result { display: none; }
+    .result.visible {
+      animation: result-pop .45s ease-out;
+      background: linear-gradient(135deg, #fff04a 0%, #67f5dd 52%, #83d5ff 100%);
+      border: 4px solid #ff4b1f;
+      box-shadow: 0 0 0 6px rgba(255,255,255,.86), 0 22px 52px rgba(255,63,31,.42);
+      display: block;
+    }
+    .result-title { color: #35105f; font-family: Georgia, "Times New Roman", "Noto Serif Hebrew", serif; font-size: clamp(1.45rem, 4vw, 2rem); margin: 0 0 4px; }
+    .result-link {
+      word-break: break-all;
+      background: #fff;
+      border: 3px solid #3c157a;
+      border-radius: 12px;
+      color: #071f4c;
+      font-size: 1.08rem;
+      font-weight: 800;
+      padding: 16px;
+      margin: 12px 0 10px;
+      user-select: all;
+    }
+    .result .primary { font-size: 1.05rem; padding: 14px 22px; }
+    @keyframes result-pop { from { opacity: 0; transform: scale(.96) translateY(-8px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+    .meta { color: var(--muted); margin: 0 0 8px; }
+    .story { border-top: 7px solid #ff5a24; }
+    .story h2, .progress-card h2 { color: #3d176d; font-family: Georgia, "Times New Roman", "Noto Serif Hebrew", serif; margin: 0 0 10px; }
+    .story p { margin: 0 0 12px; }
+    .story p:last-child { margin-bottom: 0; }
+    .reassurance { background: #baf6d4; border-inline-start: 6px solid #078a55; border-radius: 10px; padding: 12px 14px; font-weight: 750; }
+    .about-me { color: #3d176d; font-weight: 700; }
+    .share-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .share-btn {
+      align-items: center;
+      background: #17173a;
+      border: 2px solid rgba(255,255,255,.35);
+      border-radius: 12px;
+      color: #fff;
+      display: inline-flex;
+      font: inherit;
+      font-weight: 700;
+      gap: 8px;
+      padding: 10px 14px;
+      text-decoration: none;
+    }
+    .share-btn:hover { background: #2a1261; }
+    .share-btn svg { flex: 0 0 auto; height: 18px; width: 18px; }
+    .share-btn.whatsapp { background: #128c7e; border-color: #0e6e63; }
+    .share-btn.facebook { background: #1877f2; border-color: #0f5ec0; }
+    .share-btn.x { background: #111; border-color: #333; }
+    .share-btn.telegram { background: #229ed9; border-color: #1780b0; }
+    .share-btn.email { background: #5b3cc4; border-color: #4328a0; }
+    .share-btn.copy { background: #e9faff; border-color: #61cbea; color: #073e5d; }
+    .contact-line { margin: 0 0 10px; }
+    .contact-line a { color: #9defff; font-weight: 700; }
+    .progress-card { background: linear-gradient(135deg, #fff4ae 0%, #9ceaff 100%); border-color: #63d6f3; }
+    .progress-numbers { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin: 14px 0 8px; }
+    .progress-earned { color: var(--blue); font-size: clamp(1.7rem, 6vw, 2.4rem); font-weight: 800; }
+    .progress-goal { color: var(--muted); font-weight: 650; text-align: end; }
+    .progress-track { height: 20px; overflow: hidden; background: #5a4b7e; border: 2px solid rgba(17,19,49,.25); border-radius: 999px; }
+    .progress-fill { height: 100%; width: 0; background: linear-gradient(90deg, #ff321f, #ffb000, #1ce1d1); border-radius: inherit; transition: width .7s ease; }
+    html[dir="rtl"] .progress-fill { background: linear-gradient(270deg, #ff321f, #ffb000, #1ce1d1); }
+    .progress-detail { display: flex; justify-content: space-between; gap: 12px; color: var(--muted); font-size: .92rem; margin: 9px 0 0; }
+    .how-it-works { padding-inline-start: 1.25rem; margin-bottom: 0; }
+    .how-it-works li { margin-bottom: 5px; }
+    .benefits { background: linear-gradient(160deg, #ffffff 55%, #d8c9ff 100%); border-top: 7px solid #6b35d4; }
+    .benefits h2 { color: #3d176d; font-family: Georgia, "Times New Roman", "Noto Serif Hebrew", serif; margin: 0 0 10px; }
+    .benefit-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 16px 0; }
+    .benefit { background: linear-gradient(145deg, #ecfbff, #fff1c9); border: 2px solid #65cbea; border-radius: 14px; padding: 15px; }
+    .benefit strong { color: #4f168c; display: block; font-size: 1.05rem; margin-bottom: 5px; }
+    .benefit p { color: var(--muted); font-size: .94rem; margin: 0; }
+    .photo-gallery { display: grid; grid-template-columns: 1.5fr 1fr; gap: 12px; margin-top: 18px; }
+    .photo-gallery figure { background: #171717; border-radius: 14px; margin: 0; overflow: hidden; }
+    .photo-gallery figure:first-child { grid-row: span 2; }
+    .photo-gallery img { display: block; height: 220px; object-fit: contain; width: 100%; }
+    .photo-gallery figure:first-child img { height: 100%; min-height: 452px; }
+    .photo-gallery figcaption { background: #fff; color: var(--muted); font-size: .82rem; padding: 8px 10px; }
+    .photo-gallery a { color: var(--blue); }
+    .source-note { color: var(--muted); font-size: .84rem; margin: 10px 0 0; }
+    .source-note a { color: var(--blue); }
+    a.ghost { color: var(--ink); text-decoration: none; font-weight: 700; border-radius: 12px; padding: 12px 18px; }
+    textarea, .result-link { direction: ltr; text-align: left; unicode-bidi: isolate; }
+    html[dir="rtl"] body { text-align: right; }
+    html[dir="rtl"] .progress-goal { text-align: start; }
+    footer { margin-top: 28px; color: #d9e8ff; font-size: 0.92rem; }
+    @media (max-width: 650px) {
+      .benefit-grid, .photo-gallery { grid-template-columns: 1fr; }
+      .photo-gallery figure:first-child { grid-row: auto; }
+      .photo-gallery figure:first-child img { min-height: 280px; }
+    }
+    @media (max-width: 520px) {
+      .wrap { padding-top: 28px; }
+      .language-bar { align-items: stretch; flex-direction: column; }
+      .lang-toggle { width: 100%; }
+      .lang-toggle button { flex: 1; }
+      .progress-numbers, .progress-detail { align-items: flex-start; flex-direction: column; }
+      .progress-goal { text-align: start; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="language-bar" role="navigation" aria-label="Language">
+      <strong data-i18n="langBarLabel">Language</strong>
+      <div class="lang-toggle" role="group" aria-label="Language">
+        <button type="button" data-lang="en" aria-pressed="true">English</button>
+        <button type="button" data-lang="he" aria-pressed="false">עברית</button>
+      </div>
+    </div>
+    <header>
+      <p class="eyebrow" data-i18n="eyebrow">A small click can help me move again</p>
+      <h1 data-i18n="headline">Shop the same product. Help me get around.</h1>
+      <p class="lede" data-i18n="lede">Paste an AliExpress product link below. You’ll receive a new link to the exact same item at no extra cost to you, and I may earn a small affiliate commission.</p>
+    </header>
+    <section class="card converter-card">
+      <label for="sourceUrl" data-i18n="sourceLabel">Your original AliExpress product link</label>
+      <textarea id="sourceUrl" data-i18n-placeholder="sourcePlaceholder" placeholder="https://www.aliexpress.com/item/1005001234567890.html"></textarea>
+      <div class="actions">
+        <button class="primary" id="convertBtn" type="button" data-i18n="convertBtn">Convert my link</button>
+        <button class="ghost" id="clearBtn" type="button" data-i18n="clearBtn">Clear</button>
+      </div>
+      <p class="hint" data-i18n="hint">Works with product pages, mobile links, and regional AliExpress domains. No purchase is required.</p>
+      <div id="status" class="status" role="status"></div>
+    </section>
+    <section class="card result" id="resultCard" aria-live="polite" tabindex="-1">
+      <h2 class="result-title" data-i18n="resultTitle">Your new affiliate link is ready!</h2>
+      <p class="meta" id="resultMeta"></p>
+      <div class="result-link" id="resultLink" translate="no"></div>
+      <div class="actions">
+        <button class="primary" id="copyBtn" type="button" data-i18n="copyBtn">Copy new link</button>
+        <a class="ghost" id="openBtn" href="#" target="_blank" rel="noopener" data-i18n="openBtn">Open new link</a>
+      </div>
+    </section>
+    <section class="card progress-card" aria-labelledby="progressTitle">
+      <h2 id="progressTitle" data-i18n="progressTitle">The road to an EZ Raider</h2>
+      <div class="progress-numbers">
+        <span class="progress-earned" id="earnedAmount">₪0</span>
+        <span class="progress-goal"><span data-i18n="progressGoalPrefix">raised toward</span> <span id="goalAmount">₪40,000</span></span>
+      </div>
+      <div class="progress-track" id="progressTrack" role="progressbar" data-i18n-aria="progressAria" aria-label="EZ Raider funding progress" aria-valuemin="0" aria-valuemax="40000" aria-valuenow="0" aria-valuetext="₪0 raised toward ₪40,000">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <p class="progress-detail"><span id="progressPercent">0% funded</span><span id="remainingAmount">₪40,000 still to go</span></p>
+    </section>
+    <section class="card story">
+      <h2 data-i18n="storyTitle">Why I built this</h2>
+      <p class="about-me" data-i18n="storyIntro">My name is Adam. I’m married, I have two boys, and I live in Jerusalem.</p>
+      <p data-i18n="storyP1">Nine years ago, I was injured in a work-related accident. I now live with Complex Regional Pain Syndrome (CRPS) in my left hand and right foot. Because of my injuries I’m not allowed to drive, I can’t really work, and I use crutches. Public transportation isn’t a safe option for me because I can fall on buses or trains.</p>
+      <p data-i18n="storyP2">I’m saving for an EZ Raider—an accessible mobility vehicle with a starting price of about ₪40,000. If enough people convert the AliExpress links they already plan to use, those tiny commissions may add up and help me regain some independence.</p>
+      <p class="reassurance" data-i18n="reassurance">You don’t pay more and you don’t lose anything. The product and seller stay the same; only the link changes.</p>
+    </section>
+    <section class="card benefits">
+      <h2 data-i18n="benefitsTitle">How an EZ Raider would change my daily life</h2>
+      <p data-i18n="benefitsIntro">This isn’t about having a recreational vehicle. CRPS in my right foot makes mobility difficult, while CRPS in my left hand adds another challenge when I rely on crutches. An appropriate mobility vehicle could give me a practical way to make everyday journeys without driving a car or risking another fall on public transportation.</p>
+      <div class="benefit-grid">
+        <div class="benefit">
+          <strong data-i18n="benefit1Title">Up to 40 km</strong>
+          <p data-i18n="benefit1Body">The EZ Raider LW sold in Israel lists a maximum range of up to 40 km per charge. Actual range depends on terrain, weight, weather, and riding style.</p>
+        </div>
+        <div class="benefit">
+          <strong data-i18n="benefit2Title">A normal power socket</strong>
+          <p data-i18n="benefit2Body">The supplied charger connects to an external charging port and a proper household outlet. Charging takes roughly 3–5 hours, depending on the model, and the battery does not have to be removed.</p>
+        </div>
+        <div class="benefit">
+          <strong data-i18n="benefit3Title">Safer indoor storage</strong>
+          <p data-i18n="benefit3Body">At 67 cm wide with a folding structure, it may fit through my building and into secure indoor storage where a conventional mobility scooter cannot—keeping it close to a socket and away from street theft.</p>
+        </div>
+      </div>
+      <p data-i18n="benefitsOutro">Its four wheels, low center of gravity, and articulated suspension are designed for stability and maneuvering on urban and uneven surfaces. For me, that could mean reaching appointments, shops, friends, and ordinary places under my own control.</p>
+      <div class="photo-gallery" aria-label="EZ Raider with removable seat">
+        <figure>
+          <img src="https://api.bflex.io/media/product/4047/L1000919-Custom.png" data-i18n-alt="fig1Alt" alt="Full EZ Raider mobility vehicle fitted with a padded seat" loading="lazy" />
+          <figcaption data-i18n-html="fig1CaptionHtml">EZ Raider fitted with a seat. Photo: <a href="https://bflex.io/services/buy/products/ez-raider-secondhand-4-wheel-power" target="_blank" rel="noopener">bFlex product listing</a>.</figcaption>
+        </figure>
+        <figure>
+          <img src="https://ezraider.com/wp-content/uploads/2025/12/seat-370x213-1.jpg" data-i18n-alt="fig2Alt" alt="Seat installed behind the standing platform on an EZ Raider" loading="lazy" />
+          <figcaption data-i18n-html="fig2CaptionHtml">The installed seat from the <a href="https://ezraider.com/accessories/" target="_blank" rel="noopener">manufacturer’s accessories gallery</a>.</figcaption>
+        </figure>
+        <figure>
+          <img src="https://ezraider.com/wp-content/uploads/2026/01/ezraider-seat.webp" data-i18n-alt="fig3Alt" alt="Close view of the EZ Raider removable padded seat" loading="lazy" />
+          <figcaption data-i18n-html="fig3CaptionHtml">Official removable seat upgrade. Photo: <a href="https://ezraider.com/accessories/" target="_blank" rel="noopener">EZRaider</a>.</figcaption>
+        </figure>
+      </div>
+      <p class="source-note" data-i18n-html="sourceNoteHtml">Specifications vary by model. Sources: <a href="https://ezraider.com/faq/" target="_blank" rel="noopener">EZRaider manufacturer FAQ</a>, <a href="https://ezraider.com/wp-content/uploads/2026/01/ezraider-user-manual-en.pdf" target="_blank" rel="noopener">manufacturer charging instructions</a>, and <a href="https://raider-ez.com/about/" target="_blank" rel="noopener">authorized Israeli distributor specifications</a>.</p>
+    </section>
+    <section class="card">
+      <strong data-i18n="howTitle">How it works</strong>
+      <ol class="how-it-works">
+        <li data-i18n="how1">Paste the AliExpress product page you were going to use.</li>
+        <li data-i18n="how2">Copy the converted link and shop normally.</li>
+        <li data-i18n="how3">If the purchase qualifies, AliExpress may pay me a small commission.</li>
+      </ol>
+    </section>
+    <section class="card" aria-labelledby="shareTitle">
+      <strong id="shareTitle" data-i18n="shareTitle">Share this page</strong>
+      <p class="hint" data-i18n="shareHint">If this helped you, send the page to a friend who also shops on AliExpress.</p>
+      <div class="share-row" id="shareRow">
+        <a class="share-btn whatsapp" id="shareWhatsapp" href="#" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12.04 2C6.58 2 2.15 6.4 2.15 11.84c0 1.96.57 3.78 1.56 5.33L2 22l4.98-1.64a9.8 9.8 0 0 0 5.06 1.4h.01c5.46 0 9.89-4.4 9.89-9.84C21.94 6.4 17.5 2 12.04 2zm5.76 14.05c-.24.68-1.4 1.25-1.93 1.33-.5.08-1.12.11-1.81-.11-.42-.14-.95-.31-1.64-.6-2.88-1.25-4.76-4.15-4.9-4.34-.14-.2-1.17-1.55-1.17-2.96 0-1.4.74-2.09 1-2.37.26-.28.57-.35.76-.35h.55c.17 0 .41-.07.64.49.24.57.81 1.98.88 2.12.07.14.12.31.02.5-.1.2-.14.31-.28.48-.14.17-.3.37-.42.5-.14.14-.28.29-.12.56.16.28.7 1.15 1.5 1.86 1.03.92 1.9 1.2 2.17 1.34.28.14.44.12.6-.07.17-.2.7-.81.88-1.09.19-.28.37-.23.62-.14.26.1 1.63.77 1.91.91.28.14.47.21.54.32.07.12.07.68-.17 1.36z"/></svg>
+          <span data-i18n="shareWhatsapp">WhatsApp</span>
+        </a>
+        <a class="share-btn facebook" id="shareFacebook" href="#" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M13.5 22v-8h2.7l.4-3.1h-3.1V8.9c0-.9.3-1.5 1.6-1.5H16.8V4.6C16.4 4.5 15.3 4.4 14 4.4c-2.7 0-4.5 1.6-4.5 4.6v2.6H7v3.1h2.5V22h4z"/></svg>
+          <span data-i18n="shareFacebook">Facebook</span>
+        </a>
+        <a class="share-btn x" id="shareX" href="#" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 4h4.4l3.5 4.8L16.5 4H20l-5.7 6.6L20 20h-4.4l-3.8-5.2L7.5 20H4l6-6.9L4 4z"/></svg>
+          <span data-i18n="shareX">X</span>
+        </a>
+        <a class="share-btn telegram" id="shareTelegram" href="#" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9.7 14.8 9.4 19c.4 0 .6-.2.8-.4l1.9-1.8 4 2.9c.7.4 1.2.2 1.4-.7l2.5-11.8c.2-.9-.3-1.3-1-.9L4.4 10.5c-.9.3-.9.8-.2 1l3.6 1.1 8.3-5.2c.4-.2.7 0 .4.3L9.7 14.8z"/></svg>
+          <span data-i18n="shareTelegram">Telegram</span>
+        </a>
+        <a class="share-btn email" id="shareEmail" href="#">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1zm8 7 7-5H5l7 5zm0 2L4 10.2V17h16v-6.8L12 15z"/></svg>
+          <span data-i18n="shareEmail">Email</span>
+        </a>
+        <button class="share-btn copy" id="shareCopy" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8 7V5a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h3zm2 0h5a2 2 0 0 1 2 2v5h2V5H10v2zM5 9v10h9V9H5z"/></svg>
+          <span data-i18n="shareCopy">Copy link</span>
+        </button>
+      </div>
+    </section>
+    <footer>
+      <p class="contact-line" data-i18n-html="contactHtml">Questions or want to say hello? Email me at <a href="mailto:ollamaclient@gmail.com">ollamaclient@gmail.com</a>.</p>
+      <p data-i18n="footer">Affiliate disclosure: qualifying purchases may earn me a commission from AliExpress, at no additional cost to you.</p>
+    </footer>
+  </div>
+  <script src="i18n.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
