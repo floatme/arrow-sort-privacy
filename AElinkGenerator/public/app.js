@@ -112,7 +112,11 @@
         var body = payload.body || {};
         if (!body.ok) {
           resultCard.classList.remove("visible");
-          setStatus(body.error || msg("errGenerate"), "error");
+          if (body.code === "not_affiliate") {
+            setStatus(msg("errNotAffiliate"), "thanks");
+          } else {
+            setStatus(body.error || msg("errGenerate"), "error");
+          }
           return;
         }
         lastAffiliate = body.affiliateUrl;

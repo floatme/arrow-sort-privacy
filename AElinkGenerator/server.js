@@ -101,6 +101,14 @@ function createApp(options) {
     } catch (err) {
       console.error("convert failed:", err.message);
       const detail = String((err && err.message) || "").trim();
+      if (detail === "NOT_AFFILIATE" || /not.?affiliate|not in (the )?affiliate program/i.test(detail)) {
+        return res.status(422).json({
+          ok: false,
+          code: "not_affiliate",
+          error:
+            "This product isn’t in the AliExpress affiliate program, so it can’t be converted. Thank you for trying :)",
+        });
+      }
       return res.status(503).json({
         ok: false,
         error:

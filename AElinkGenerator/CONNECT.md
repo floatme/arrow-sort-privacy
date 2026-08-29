@@ -27,7 +27,13 @@ After that, reboot once and confirm https://helpmegetaround.com still loads.
 Manual start anytime: **`start-all.bat`**  
 Remove auto-start: **`uninstall-autostart.bat`**
 
-If convert fails: the site uses a **separate Chrome window** launched by `open.bat` / `start-all.bat` (profile folder next to the app). Signing in to Portals in your normal Chrome does **not** count. Sign in in the window the app opens, then retry. Check `https://helpmegetaround.com/api/health` for `loggedIn` / `detail`.
+If convert fails:
+1. Open `logs\last-convert-error.txt` in this folder — it has the real reason.
+2. Or open https://helpmegetaround.com/api/health and check `loggedIn` / `detail` / `lastError`.
+3. The app uses its **own Chrome window** (not your normal Chrome). Sign into Portals Link Generator there.
+4. After pulling new code, run **`restart-converter.bat`**.
+
+The site must be serving the updated `server.js` / `portals.js`. If health only returns `{"ok":true,"mode":"portals"}` with no `loggedIn` field, the PC is still running old code.
 
 ---
 

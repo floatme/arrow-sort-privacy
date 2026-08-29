@@ -87,6 +87,8 @@
       errPasteFirst: "Paste an AliExpress product link first.",
       statusGenerating: "Generating your tracking link…",
       errGenerate: "Could not generate a link.",
+      errNotAffiliate:
+        "This product isn’t in the AliExpress affiliate program, so it can’t be converted. Thank you for trying :)",
       statusReady: "Affiliate link ready.",
       errReach: "Could not reach the link generator. Try again in a moment.",
       metaProduct: "Product {id}",
@@ -174,6 +176,8 @@
       errPasteFirst: "קודם הדביקו קישור למוצר בעליאקספרס.",
       statusGenerating: "מייצרים עבורכם קישור מעקב…",
       errGenerate: "לא ניתן לייצר קישור.",
+      errNotAffiliate:
+        "המוצר הזה לא נמצא בתוכנית השותפים של עליאקספרס, ולכן אי אפשר להמיר אותו. תודה שניסיתם :)",
       statusReady: "קישור השותפים מוכן.",
       errReach: "לא ניתן להגיע לממיר הקישורים. נסו שוב בעוד רגע.",
       metaProduct: "מוצר {id}",

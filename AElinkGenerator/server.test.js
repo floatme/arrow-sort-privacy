@@ -88,3 +88,28 @@ test("surfaces Portals generator errors to the client", async () => {
     await http.close();
   }
 });
+
+test("tells the user when a product is not in the affiliate program", async () => {
+  const app = createApp({
+    generate: async () => {
+      throw new Error("NOT_AFFILIATE");
+    },
+  });
+  const http = await listen(app);
+  try {
+    const res = await fetch(http.url + "/api/convert", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        url: "https://www.aliexpress.com/item/1005006123456789.html",
+      }),
+    });
+    assert.equal(res.status, 422);
+    const body = await res.json();
+    assert.equal(body.ok, false);
+    assert.equal(body.code, "not_affiliate");
+    assert.match(body.error, /Thank you for trying/i);
+  } finally {
+    await http.close();
+  }
+});
