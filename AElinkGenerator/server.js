@@ -49,9 +49,15 @@ function createApp(options) {
   app.get("/api/health", async (_req, res) => {
     try {
       const status = await getStatus();
-      res.json({ ok: true, mode: status.mode || options.mode || "unknown" });
+      res.json({
+        ok: status.ok !== false,
+        mode: status.mode || options.mode || "unknown",
+        loggedIn: status.loggedIn,
+        detail: status.detail,
+        lastError: status.lastError || undefined,
+      });
     } catch (err) {
-      res.status(503).json({ ok: false });
+      res.status(503).json({ ok: false, error: String((err && err.message) || "unavailable") });
     }
   });
 
@@ -94,9 +100,12 @@ function createApp(options) {
       });
     } catch (err) {
       console.error("convert failed:", err.message);
+      const detail = String((err && err.message) || "").trim();
       return res.status(503).json({
         ok: false,
-        error: "The link generator is unavailable. Try again in a minute.",
+        error:
+          detail ||
+          "The link generator is unavailable. Try again in a minute.",
       });
     }
   });
@@ -158,7 +167,8 @@ async function start(env) {
       console.log("Same Wi-Fi:        http://" + ip + ":" + port);
     });
     if (generator.mode === "portals") {
-      console.log("Sign in to AliExpress Portals in the Chrome window if prompted.");
+      console.log("IMPORTANT: A separate Chrome window will open for Portals.");
+      console.log("Sign in THERE (your normal Chrome login does not count).");
       console.log("Leave this window and that Chrome profile running. It refreshes every 25 minutes.");
       console.log("Keep the PC awake (plugged in, sleep set to Never).");
     } else {

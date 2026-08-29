@@ -27,7 +27,7 @@ After that, reboot once and confirm https://helpmegetaround.com still loads.
 Manual start anytime: **`start-all.bat`**  
 Remove auto-start: **`uninstall-autostart.bat`**
 
-If `/api/convert` returns “link generator is unavailable”, sign in to Portals in the Chrome window that opens.
+If convert fails: the site uses a **separate Chrome window** launched by `open.bat` / `start-all.bat` (profile folder next to the app). Signing in to Portals in your normal Chrome does **not** count. Sign in in the window the app opens, then retry. Check `https://helpmegetaround.com/api/health` for `loggedIn` / `detail`.
 
 ---
 

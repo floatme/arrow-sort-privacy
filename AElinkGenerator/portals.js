@@ -31,16 +31,37 @@ async function createPortalsGenerator(options) {
   let context;
   let page;
   let timer;
+  let lastError = null;
+
+  function friendlyLaunchError(err) {
+    const message = String((err && err.message) || err || "");
+    if (/user data directory is already in use|SingletonLock|ProcessSingleton/i.test(message)) {
+      return (
+        "The Portals Chrome profile is locked. Close other AElinkGenerator Chrome windows " +
+        "(and any leftover chrome.exe using the profile folder), then restart open.bat / start-all.bat. " +
+        "Signing in to your normal Chrome does not count — this app uses its own Chrome window."
+      );
+    }
+    if (/Executable doesn't exist|Failed to launch|browserType\.launch/i.test(message)) {
+      return "Could not launch Google Chrome for Portals. Install Chrome, then restart the converter.";
+    }
+    return message || "Portals automation failed.";
+  }
 
   async function ensurePage() {
     if (page && !page.isClosed()) return page;
     if (!context) {
-      context = await playwright.chromium.launchPersistentContext(profileDir, {
-        headless: headless,
-        channel: options.channel || "chrome",
-        viewport: { width: 1280, height: 900 },
-        args: ["--disable-blink-features=AutomationControlled"],
-      });
+      try {
+        context = await playwright.chromium.launchPersistentContext(profileDir, {
+          headless: headless,
+          channel: options.channel || "chrome",
+          viewport: { width: 1280, height: 900 },
+          args: ["--disable-blink-features=AutomationControlled"],
+        });
+      } catch (err) {
+        lastError = friendlyLaunchError(err);
+        throw new Error(lastError);
+      }
     }
     page = context.pages()[0] || (await context.newPage());
     return page;
@@ -54,6 +75,16 @@ async function createPortalsGenerator(options) {
     return current;
   }
 
+  async function isLoggedIn(current) {
+    const bodyText = (await current.locator("body").innerText().catch(() => "")) || "";
+    const url = current.url();
+    if (/login\.aliexpress|passport\.aliexpress|signin/i.test(url)) return false;
+    if (/sign in|log in|please login/i.test(bodyText) && !/get tracking link|link generator/i.test(bodyText)) {
+      return false;
+    }
+    return true;
+  }
+
   async function refresh() {
     return mutex(async () => {
       const current = await ensurePage();
@@ -61,46 +92,83 @@ async function createPortalsGenerator(options) {
     });
   }
 
+  async function getStatus() {
+    try {
+      const current = await openGenerator();
+      const loggedIn = await isLoggedIn(current);
+      return {
+        mode: "portals",
+        loggedIn,
+        url: current.url(),
+        lastError: lastError,
+        ok: loggedIn,
+        detail: loggedIn
+          ? "Portals Chrome is open and signed in."
+          : "Portals Chrome is open but not signed in. Use the Chrome window opened by this app (not your normal Chrome), sign in, then retry.",
+      };
+    } catch (err) {
+      lastError = friendlyLaunchError(err);
+      return {
+        mode: "portals",
+        loggedIn: false,
+        ok: false,
+        lastError: lastError,
+        detail: lastError,
+      };
+    }
+  }
+
   async function generate(productUrl) {
     return mutex(async () => {
-      const current = await openGenerator();
-      const bodyText = (await current.locator("body").innerText().catch(() => "")) || "";
-      if (/sign in|log in|please login/i.test(bodyText) && !/get tracking link/i.test(bodyText)) {
-        throw new Error("Portals is logged out. Sign in on the Chrome window this server opened, then retry.");
-      }
-
-      const labeled = current.getByLabel(/url/i);
-      const placeholder = current.getByPlaceholder(/url|http|aliexpress/i);
-      const fallback = current.locator('input[type="text"], input[type="url"], textarea, .next-input input');
-      const urlBox = (await labeled.count())
-        ? labeled.first()
-        : (await placeholder.count())
-          ? placeholder.first()
-          : fallback.first();
-      await urlBox.waitFor({ state: "visible", timeout: 15000 });
-      await urlBox.fill(productUrl);
-
-      const namedButton = current.getByRole("button", { name: /get tracking link|generate/i });
-      const button = (await namedButton.count())
-        ? namedButton.first()
-        : current.locator("button").filter({ hasText: /get tracking link|generate/i }).first();
-      const before = extractClickLinks(await current.content());
-      await button.click();
-
-      const deadline = Date.now() + 25000;
-      while (Date.now() < deadline) {
-        const html = await current.content();
-        const text = await current.locator("body").innerText().catch(() => "");
-        const found = extractClickLinks(html + "\n" + text).filter((link) => !before.includes(link));
-        if (found.length) {
-          return { ok: true, affiliateUrl: found[found.length - 1], productUrl: productUrl };
+      try {
+        const current = await openGenerator();
+        if (!(await isLoggedIn(current))) {
+          lastError =
+            "Portals is logged out in the app Chrome window. Sign in there (not in your normal Chrome), then retry.";
+          throw new Error(lastError);
         }
-        if (/not in (the )?affiliate program|cannot promote|failed to generate/i.test(text)) {
-          throw new Error("AliExpress did not generate a link for this product.");
+
+        const labeled = current.getByLabel(/url/i);
+        const placeholder = current.getByPlaceholder(/url|http|aliexpress/i);
+        const fallback = current.locator(
+          'input[type="text"], input[type="url"], textarea, .next-input input'
+        );
+        const urlBox = (await labeled.count())
+          ? labeled.first()
+          : (await placeholder.count())
+            ? placeholder.first()
+            : fallback.first();
+        await urlBox.waitFor({ state: "visible", timeout: 15000 });
+        await urlBox.fill(productUrl);
+
+        const namedButton = current.getByRole("button", { name: /get tracking link|generate/i });
+        const button = (await namedButton.count())
+          ? namedButton.first()
+          : current.locator("button").filter({ hasText: /get tracking link|generate/i }).first();
+        const before = extractClickLinks(await current.content());
+        await button.click();
+
+        const deadline = Date.now() + 25000;
+        while (Date.now() < deadline) {
+          const html = await current.content();
+          const text = await current.locator("body").innerText().catch(() => "");
+          const found = extractClickLinks(html + "\n" + text).filter((link) => !before.includes(link));
+          if (found.length) {
+            lastError = null;
+            return { ok: true, affiliateUrl: found[found.length - 1], productUrl: productUrl };
+          }
+          if (/not in (the )?affiliate program|cannot promote|failed to generate/i.test(text)) {
+            lastError = "AliExpress did not generate a link for this product.";
+            throw new Error(lastError);
+          }
+          await current.waitForTimeout(250);
         }
-        await current.waitForTimeout(250);
+        lastError = "Timed out waiting for Portals to generate a tracking link.";
+        throw new Error(lastError);
+      } catch (err) {
+        lastError = friendlyLaunchError(err);
+        throw new Error(lastError);
       }
-      throw new Error("Timed out waiting for Portals to generate a tracking link.");
     });
   }
 
@@ -125,8 +193,10 @@ async function createPortalsGenerator(options) {
     stop,
     refresh,
     generate,
+    getStatus,
   };
 }
+
 
 module.exports = {
   GENERATOR_URL,

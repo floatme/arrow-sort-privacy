@@ -65,17 +65,25 @@ test("returns the operator affiliate link from the generator", async () => {
   }
 });
 
-test("serves the public website", async () => {
-  const app = createApp({ generate: async () => ({ ok: false }) });
+test("surfaces Portals generator errors to the client", async () => {
+  const app = createApp({
+    generate: async () => {
+      throw new Error("Portals is logged out in the app Chrome window.");
+    },
+  });
   const http = await listen(app);
   try {
-    const res = await fetch(http.url + "/");
-    assert.equal(res.status, 200);
-    const html = await res.text();
-    assert.match(html, /AliExpress/i);
-    assert.match(html, /Convert my link/);
-    assert.match(html, /data-lang="he"/);
-    assert.doesNotMatch(html, /translate\.google\.com|googleTranslateElementInit/);
+    const res = await fetch(http.url + "/api/convert", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        url: "https://www.aliexpress.com/item/1005006123456789.html",
+      }),
+    });
+    assert.equal(res.status, 503);
+    const body = await res.json();
+    assert.equal(body.ok, false);
+    assert.match(body.error, /Portals is logged out/i);
   } finally {
     await http.close();
   }
