@@ -13,16 +13,17 @@ Connect **helpmegetaround.com**: run **`connect-helpmegetaround.bat`** or see **
 2. Confirm Google Chrome is installed.
 3. Copy this folder to `c:\AI\AElinkGenerator\`.
 
-## Every time you want the site live
+## Every time / auto-start
 
-1. Double-click `open.bat`.
-2. Leave that black window open.
-3. In the Chrome window that opens, sign in to Portals if it asks.
-4. Open http://localhost:3000 and paste an AliExpress product URL.
+**One-time:** double-click **`install-autostart.bat`**. After that, Windows sign-in starts the converter and Cloudflare tunnel automatically.
 
-The script stops the PC from sleeping while it runs. Still plug the PC in, and in Windows set **Sleep → Never** when you want it on overnight.
+**Manual:** double-click **`start-all.bat`** (or `open.bat` for the converter only).
 
-If the PC reboots, run `open.bat` again. You usually stay logged in.
+1. Leave the minimized windows running.
+2. Sign in to Portals in Chrome if it asks.
+3. Site: http://localhost:3000 and https://helpmegetaround.com
+
+The script stops the PC from sleeping while it runs. Plug the PC in and set **Sleep → Never** for overnight.
 
 ## Other devices on your Wi-Fi
 
