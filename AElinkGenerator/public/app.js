@@ -12,6 +12,69 @@
   var copyBtn = document.getElementById("copyBtn");
   var openBtn = document.getElementById("openBtn");
   var lastAffiliate = "";
+  var lastProductId = "";
+  var lastProgress = null;
+
+  function i18n() {
+    return window.HMGA_I18N || null;
+  }
+
+  function lang() {
+    return i18n() ? i18n().current() : "en";
+  }
+
+  function msg(key, vars) {
+    var api = i18n();
+    if (!api) return key;
+    var text = api.t(key, lang());
+    return vars ? api.fill(text, vars) : text;
+  }
+
+  function formatNis(value) {
+    var locale = lang() === "he" ? "he-IL" : "en-US";
+    return "₪" + Math.round(Number(value) || 0).toLocaleString(locale);
+  }
+
+  function renderProgress(data) {
+    if (!data) return;
+    lastProgress = data;
+    document.getElementById("earnedAmount").textContent = formatNis(data.earnedNis);
+    document.getElementById("goalAmount").textContent = formatNis(data.goalNis);
+    var remaining = document.getElementById("remainingAmount");
+    if (lang() === "he") {
+      remaining.textContent = msg("remainingSuffix") + " " + formatNis(data.remainingNis);
+    } else {
+      remaining.textContent = formatNis(data.remainingNis) + " " + msg("remainingSuffix");
+    }
+    document.getElementById("progressPercent").textContent = msg("percentFunded", {
+      n: data.percentage,
+    });
+    document.getElementById("progressFill").style.width = data.percentage + "%";
+    var track = document.getElementById("progressTrack");
+    track.setAttribute("aria-valuemax", String(data.goalNis));
+    track.setAttribute("aria-valuenow", String(data.earnedNis));
+    track.setAttribute(
+      "aria-valuetext",
+      msg("raisedToward", {
+        earned: formatNis(data.earnedNis),
+        goal: formatNis(data.goalNis),
+      })
+    );
+  }
+
+  function loadProgress() {
+    fetch(API_BASE + "/api/progress")
+      .then(function (res) {
+        return res.json();
+      })
+      .then(function (data) {
+        if (!data.ok) return;
+        renderProgress(data);
+      })
+      .catch(function () {
+        /* Keep the server-rendered zero state. */
+      });
+  }
 
   function setStatus(message, kind) {
     statusEl.className = "status " + (kind || "");
@@ -19,15 +82,22 @@
     statusEl.style.display = message ? "block" : "none";
   }
 
+  function refreshResultMeta() {
+    if (!lastAffiliate) return;
+    resultMeta.textContent = lastProductId
+      ? msg("metaProduct", { id: lastProductId })
+      : msg("metaReady");
+  }
+
   function convertNow() {
     var url = String(sourceInput.value || "").trim();
     if (!url) {
       resultCard.classList.remove("visible");
-      setStatus("Paste an AliExpress product link first.", "error");
+      setStatus(msg("errPasteFirst"), "error");
       return;
     }
     convertBtn.disabled = true;
-    setStatus("Generating your tracking link…", "ok");
+    setStatus(msg("statusGenerating"), "ok");
     fetch(API_BASE + "/api/convert", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -42,19 +112,25 @@
         var body = payload.body || {};
         if (!body.ok) {
           resultCard.classList.remove("visible");
-          setStatus(body.error || "Could not generate a link.", "error");
+          setStatus(body.error || msg("errGenerate"), "error");
           return;
         }
         lastAffiliate = body.affiliateUrl;
-        resultMeta.textContent = body.productId ? "Product " + body.productId : "Affiliate link ready";
+        lastProductId = body.productId || "";
+        refreshResultMeta();
         resultLink.textContent = body.affiliateUrl;
         openBtn.href = body.affiliateUrl;
+        openBtn.setAttribute("data-original-href", body.affiliateUrl);
         resultCard.classList.add("visible");
-        setStatus("Affiliate link ready.", "ok");
+        setStatus(msg("statusReady"), "ok");
+        resultCard.focus();
+        if (resultCard.scrollIntoView) {
+          resultCard.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
       })
       .catch(function () {
         resultCard.classList.remove("visible");
-        setStatus("Could not reach the link generator. Try again in a moment.", "error");
+        setStatus(msg("errReach"), "error");
       })
       .finally(function () {
         convertBtn.disabled = false;
@@ -65,7 +141,8 @@
     if (!lastAffiliate) return;
     var original = copyBtn.textContent;
     function done() {
-      copyBtn.textContent = "Copied";
+      copyBtn.textContent = msg("copied");
+      setStatus(msg("statusCopied"), "ok");
       setTimeout(function () {
         copyBtn.textContent = original;
       }, 1500);
@@ -81,6 +158,7 @@
   clearBtn.addEventListener("click", function () {
     sourceInput.value = "";
     lastAffiliate = "";
+    lastProductId = "";
     resultCard.classList.remove("visible");
     setStatus("");
     sourceInput.focus();
@@ -92,4 +170,12 @@
       convertNow();
     }
   });
+  window.addEventListener("hmga:langchange", function () {
+    refreshResultMeta();
+    if (lastProgress) renderProgress(lastProgress);
+    if (statusEl.style.display === "block" && statusEl.textContent) {
+      /* Leave live status as-is; next action will use new language. */
+    }
+  });
+  loadProgress();
 })();

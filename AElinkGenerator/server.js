@@ -55,6 +55,20 @@ function createApp(options) {
     }
   });
 
+  app.get("/api/progress", (_req, res) => {
+    const goalNis = Number(options.goalNis || process.env.GOAL_NIS || 40000);
+    const earnedNis = Number(options.earnedNis || process.env.EARNED_NIS || 0);
+    const remainingNis = Math.max(0, goalNis - earnedNis);
+    const percentage = goalNis > 0 ? Math.min(100, Math.round((earnedNis / goalNis) * 100)) : 0;
+    res.json({
+      ok: true,
+      earnedNis,
+      goalNis,
+      remainingNis,
+      percentage,
+    });
+  });
+
   app.post("/api/convert", async (req, res) => {
     if (!limiter(clientIp(req))) {
       return res.status(429).json({ ok: false, error: "Too many requests. Please wait a moment." });

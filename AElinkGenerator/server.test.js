@@ -73,7 +73,9 @@ test("serves the public website", async () => {
     assert.equal(res.status, 200);
     const html = await res.text();
     assert.match(html, /AliExpress/i);
-    assert.match(html, /Get affiliate link/);
+    assert.match(html, /Convert my link/);
+    assert.match(html, /data-lang="he"/);
+    assert.doesNotMatch(html, /translate\.google\.com|googleTranslateElementInit/);
   } finally {
     await http.close();
   }
