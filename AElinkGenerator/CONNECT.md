@@ -14,16 +14,20 @@ The converter runs on your desktop (Portals + Node) and is published via Cloudfl
 
 ---
 
-## Keep it online
+## Keep it online (auto-start)
 
 On your Windows PC (`c:\AI\AElinkGenerator\`):
 
-1. Keep **`open.bat`** (or the converter server) running, Portals signed in.
-2. Keep **`cloudflared tunnel run …`** running.
+1. Double-click **`install-autostart.bat`** once.
+2. It registers a Task Scheduler job that runs **`start-all.bat`** at Windows sign-in (+30s).
+3. Optionally installs the **cloudflared Windows service** (more reliable tunnel).
 
-After a reboot, start both again (or use `connect-helpmegetaround.bat`).
+After that, reboot once and confirm https://helpmegetaround.com still loads.
 
-If `/api/convert` returns “link generator is unavailable”, re-open Portals Chrome and sign in again.
+Manual start anytime: **`start-all.bat`**  
+Remove auto-start: **`uninstall-autostart.bat`**
+
+If `/api/convert` returns “link generator is unavailable”, sign in to Portals in the Chrome window that opens.
 
 ---
 
