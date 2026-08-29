@@ -113,11 +113,12 @@ Do this when you want one address that does not change.
 6. Edit that file:
    - Put the tunnel id
    - Put the full path to the credentials JSON (same folder, named `<tunnel-id>.json`)
-   - Put your hostname, e.g. `links.yourdomain.com`
+   - Put your hostname, e.g. `helpmegetaround.com`
 7. Point DNS at the tunnel:
 
    ```
-   cloudflared tunnel route dns aelinkgenerator links.yourdomain.com
+   cloudflared tunnel route dns aelinkgenerator helpmegetaround.com
+   cloudflared tunnel route dns aelinkgenerator www.helpmegetaround.com
    ```
 
 8. With `open.bat` already running:
@@ -126,7 +127,7 @@ Do this when you want one address that does not change.
    cloudflared tunnel run aelinkgenerator
    ```
 
-9. Open `https://links.yourdomain.com` and test a conversion.
+9. Open `https://helpmegetaround.com` and test a conversion.
 
 Optional later: install as a Windows service (`cloudflared service install`) so the tunnel starts at boot. You still need `open.bat` (or a startup shortcut to it) so Portals Chrome is logged in.
 
