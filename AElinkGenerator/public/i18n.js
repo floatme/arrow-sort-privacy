@@ -29,6 +29,8 @@
       copyBtn: "Copy new link",
       openBtn: "Open new link",
       storyTitle: "Why I built this",
+      storyIntro:
+        "My name is Adam. I’m married, I have two boys, and I live in Jerusalem.",
       storyP1:
         "Nine years ago, I was injured in a work-related accident. I now live with Complex Regional Pain Syndrome (CRPS) in my left hand and right foot. Because of my injuries I’m not allowed to drive, I can’t really work, and I use crutches. Public transportation isn’t a safe option for me because I can fall on buses or trains.",
       storyP2:
@@ -67,6 +69,19 @@
       how1: "Paste the AliExpress product page you were going to use.",
       how2: "Copy the converted link and shop normally.",
       how3: "If the purchase qualifies, AliExpress may pay me a small commission.",
+      shareTitle: "Share this page",
+      shareHint: "If this helped you, send the page to a friend who also shops on AliExpress.",
+      shareWhatsapp: "WhatsApp",
+      shareFacebook: "Facebook",
+      shareX: "X",
+      shareTelegram: "Telegram",
+      shareEmail: "Email",
+      shareCopy: "Copy link",
+      shareCopied: "Link copied!",
+      shareText:
+        "Help Adam get around — convert AliExpress links at no extra cost: https://helpmegetaround.com",
+      contactHtml:
+        'Questions or want to say hello? Email me at <a href="mailto:ollamaclient@gmail.com">ollamaclient@gmail.com</a>.',
       footer:
         "Affiliate disclosure: qualifying purchases may earn me a commission from AliExpress, at no additional cost to you.",
       errPasteFirst: "Paste an AliExpress product link first.",
@@ -102,6 +117,7 @@
       copyBtn: "העתיקו את הקישור החדש",
       openBtn: "פתחו את הקישור החדש",
       storyTitle: "למה בניתי את זה",
+      storyIntro: "קוראים לי אדם. אני נשוי, אב לשני בנים, ואני גר בירושלים.",
       storyP1:
         "לפני תשע שנים נפצעתי בתאונת עבודה. מאז אני חי עם תסמונת כאב אזורי מורכב (CRPS) ביד שמאל וברגל ימין. בגלל הפציעות אסור לי לנהוג, אני כמעט לא יכול לעבוד, ואני נעזר בקביים. תחבורה ציבורית אינה בטוחה עבורי כי אני עלול ליפול באוטובוס או ברכבת.",
       storyP2:
@@ -140,6 +156,19 @@
       how1: "הדביקו את דף המוצר בעליאקספרס שבו תכננתם להשתמש.",
       how2: "העתיקו את הקישור המומר וקנו כרגיל.",
       how3: "אם הרכישה עומדת בתנאים, עליאקספרס עשויים לשלם לי עמלה קטנה.",
+      shareTitle: "שתפו את העמוד",
+      shareHint: "אם זה עזר לכם, שלחו את העמוד לחבר שגם קונה בעליאקספרס.",
+      shareWhatsapp: "וואטסאפ",
+      shareFacebook: "פייסבוק",
+      shareX: "X",
+      shareTelegram: "טלגרם",
+      shareEmail: "אימייל",
+      shareCopy: "העתיקו קישור",
+      shareCopied: "הקישור הועתק!",
+      shareText:
+        "עזרו לאדם להתנייד — המירו קישורי עליאקספרס בלי עלות נוספת: https://helpmegetaround.com",
+      contactHtml:
+        'שאלות או רוצים לומר שלום? כתבו אליי ב־<a href="mailto:ollamaclient@gmail.com">ollamaclient@gmail.com</a>.',
       footer:
         "גילוי נאות: רכישות מתאימות עשויות להניב לי עמלה מעליאקספרס, בלי עלות נוספת עבורכם.",
       errPasteFirst: "קודם הדביקו קישור למוצר בעליאקספרס.",

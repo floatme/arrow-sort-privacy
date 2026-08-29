@@ -170,12 +170,62 @@
       convertNow();
     }
   });
+
+  var PAGE_URL = "https://helpmegetaround.com/";
+
+  function sharePayload() {
+    return {
+      url: PAGE_URL,
+      text: msg("shareText"),
+    };
+  }
+
+  function wireShareLinks() {
+    var payload = sharePayload();
+    var encodedUrl = encodeURIComponent(payload.url);
+    var encodedText = encodeURIComponent(payload.text);
+    var whatsapp = document.getElementById("shareWhatsapp");
+    var facebook = document.getElementById("shareFacebook");
+    var xBtn = document.getElementById("shareX");
+    var telegram = document.getElementById("shareTelegram");
+    var email = document.getElementById("shareEmail");
+    if (whatsapp) whatsapp.href = "https://wa.me/?text=" + encodedText;
+    if (facebook) facebook.href = "https://www.facebook.com/sharer/sharer.php?u=" + encodedUrl;
+    if (xBtn) xBtn.href = "https://twitter.com/intent/tweet?text=" + encodedText;
+    if (telegram) telegram.href = "https://t.me/share/url?url=" + encodedUrl + "&text=" + encodedText;
+    if (email) {
+      email.href =
+        "mailto:?subject=" +
+        encodeURIComponent("Help Me Get Around") +
+        "&body=" +
+        encodedText;
+    }
+  }
+
+  var shareCopy = document.getElementById("shareCopy");
+  if (shareCopy) {
+    shareCopy.addEventListener("click", function () {
+      var label = shareCopy.querySelector("[data-i18n]") || shareCopy;
+      var original = label.textContent;
+      function done() {
+        label.textContent = msg("shareCopied");
+        setTimeout(function () {
+          label.textContent = msg("shareCopy");
+        }, 1500);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(PAGE_URL).then(done).catch(done);
+      } else {
+        done();
+      }
+    });
+  }
+
   window.addEventListener("hmga:langchange", function () {
     refreshResultMeta();
     if (lastProgress) renderProgress(lastProgress);
-    if (statusEl.style.display === "block" && statusEl.textContent) {
-      /* Leave live status as-is; next action will use new language. */
-    }
+    wireShareLinks();
   });
+  wireShareLinks();
   loadProgress();
 })();

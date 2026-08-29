@@ -150,6 +150,36 @@
     .story p { margin: 0 0 12px; }
     .story p:last-child { margin-bottom: 0; }
     .reassurance { background: #baf6d4; border-inline-start: 6px solid #078a55; border-radius: 10px; padding: 12px 14px; font-weight: 750; }
+    .about-me { color: #3d176d; font-weight: 700; }
+    .share-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .share-btn {
+      align-items: center;
+      background: #17173a;
+      border: 2px solid rgba(255,255,255,.35);
+      border-radius: 12px;
+      color: #fff;
+      display: inline-flex;
+      font: inherit;
+      font-weight: 700;
+      gap: 8px;
+      padding: 10px 14px;
+      text-decoration: none;
+    }
+    .share-btn:hover { background: #2a1261; }
+    .share-btn svg { flex: 0 0 auto; height: 18px; width: 18px; }
+    .share-btn.whatsapp { background: #128c7e; border-color: #0e6e63; }
+    .share-btn.facebook { background: #1877f2; border-color: #0f5ec0; }
+    .share-btn.x { background: #111; border-color: #333; }
+    .share-btn.telegram { background: #229ed9; border-color: #1780b0; }
+    .share-btn.email { background: #5b3cc4; border-color: #4328a0; }
+    .share-btn.copy { background: #e9faff; border-color: #61cbea; color: #073e5d; }
+    .contact-line { margin: 0 0 10px; }
+    .contact-line a { color: #9defff; font-weight: 700; }
     .progress-card { background: linear-gradient(135deg, #fff4ae 0%, #9ceaff 100%); border-color: #63d6f3; }
     .progress-numbers { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin: 14px 0 8px; }
     .progress-earned { color: var(--blue); font-size: clamp(1.7rem, 6vw, 2.4rem); font-weight: 800; }
@@ -228,8 +258,20 @@
         <a class="ghost" id="openBtn" href="#" target="_blank" rel="noopener" data-i18n="openBtn">Open new link</a>
       </div>
     </section>
+    <section class="card progress-card" aria-labelledby="progressTitle">
+      <h2 id="progressTitle" data-i18n="progressTitle">The road to an EZ Raider</h2>
+      <div class="progress-numbers">
+        <span class="progress-earned" id="earnedAmount">₪0</span>
+        <span class="progress-goal"><span data-i18n="progressGoalPrefix">raised toward</span> <span id="goalAmount">₪40,000</span></span>
+      </div>
+      <div class="progress-track" id="progressTrack" role="progressbar" data-i18n-aria="progressAria" aria-label="EZ Raider funding progress" aria-valuemin="0" aria-valuemax="40000" aria-valuenow="0" aria-valuetext="₪0 raised toward ₪40,000">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <p class="progress-detail"><span id="progressPercent">0% funded</span><span id="remainingAmount">₪40,000 still to go</span></p>
+    </section>
     <section class="card story">
       <h2 data-i18n="storyTitle">Why I built this</h2>
+      <p class="about-me" data-i18n="storyIntro">My name is Adam. I’m married, I have two boys, and I live in Jerusalem.</p>
       <p data-i18n="storyP1">Nine years ago, I was injured in a work-related accident. I now live with Complex Regional Pain Syndrome (CRPS) in my left hand and right foot. Because of my injuries I’m not allowed to drive, I can’t really work, and I use crutches. Public transportation isn’t a safe option for me because I can fall on buses or trains.</p>
       <p data-i18n="storyP2">I’m saving for an EZ Raider—an accessible mobility vehicle with a starting price of about ₪40,000. If enough people convert the AliExpress links they already plan to use, those tiny commissions may add up and help me regain some independence.</p>
       <p class="reassurance" data-i18n="reassurance">You don’t pay more and you don’t lose anything. The product and seller stay the same; only the link changes.</p>
@@ -268,17 +310,6 @@
       </div>
       <p class="source-note" data-i18n-html="sourceNoteHtml">Specifications vary by model. Sources: <a href="https://ezraider.com/faq/" target="_blank" rel="noopener">EZRaider manufacturer FAQ</a>, <a href="https://ezraider.com/wp-content/uploads/2026/01/ezraider-user-manual-en.pdf" target="_blank" rel="noopener">manufacturer charging instructions</a>, and <a href="https://raider-ez.com/about/" target="_blank" rel="noopener">authorized Israeli distributor specifications</a>.</p>
     </section>
-    <section class="card progress-card" aria-labelledby="progressTitle">
-      <h2 id="progressTitle" data-i18n="progressTitle">The road to an EZ Raider</h2>
-      <div class="progress-numbers">
-        <span class="progress-earned" id="earnedAmount">₪0</span>
-        <span class="progress-goal"><span data-i18n="progressGoalPrefix">raised toward</span> <span id="goalAmount">₪40,000</span></span>
-      </div>
-      <div class="progress-track" id="progressTrack" role="progressbar" data-i18n-aria="progressAria" aria-label="EZ Raider funding progress" aria-valuemin="0" aria-valuemax="40000" aria-valuenow="0" aria-valuetext="₪0 raised toward ₪40,000">
-        <div class="progress-fill" id="progressFill"></div>
-      </div>
-      <p class="progress-detail"><span id="progressPercent">0% funded</span><span id="remainingAmount">₪40,000 still to go</span></p>
-    </section>
     <section class="card">
       <strong data-i18n="howTitle">How it works</strong>
       <ol class="how-it-works">
@@ -287,7 +318,40 @@
         <li data-i18n="how3">If the purchase qualifies, AliExpress may pay me a small commission.</li>
       </ol>
     </section>
-    <footer data-i18n="footer">Affiliate disclosure: qualifying purchases may earn me a commission from AliExpress, at no additional cost to you.</footer>
+    <section class="card" aria-labelledby="shareTitle">
+      <strong id="shareTitle" data-i18n="shareTitle">Share this page</strong>
+      <p class="hint" data-i18n="shareHint">If this helped you, send the page to a friend who also shops on AliExpress.</p>
+      <div class="share-row" id="shareRow">
+        <a class="share-btn whatsapp" id="shareWhatsapp" href="#" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12.04 2C6.58 2 2.15 6.4 2.15 11.84c0 1.96.57 3.78 1.56 5.33L2 22l4.98-1.64a9.8 9.8 0 0 0 5.06 1.4h.01c5.46 0 9.89-4.4 9.89-9.84C21.94 6.4 17.5 2 12.04 2zm5.76 14.05c-.24.68-1.4 1.25-1.93 1.33-.5.08-1.12.11-1.81-.11-.42-.14-.95-.31-1.64-.6-2.88-1.25-4.76-4.15-4.9-4.34-.14-.2-1.17-1.55-1.17-2.96 0-1.4.74-2.09 1-2.37.26-.28.57-.35.76-.35h.55c.17 0 .41-.07.64.49.24.57.81 1.98.88 2.12.07.14.12.31.02.5-.1.2-.14.31-.28.48-.14.17-.3.37-.42.5-.14.14-.28.29-.12.56.16.28.7 1.15 1.5 1.86 1.03.92 1.9 1.2 2.17 1.34.28.14.44.12.6-.07.17-.2.7-.81.88-1.09.19-.28.37-.23.62-.14.26.1 1.63.77 1.91.91.28.14.47.21.54.32.07.12.07.68-.17 1.36z"/></svg>
+          <span data-i18n="shareWhatsapp">WhatsApp</span>
+        </a>
+        <a class="share-btn facebook" id="shareFacebook" href="#" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M13.5 22v-8h2.7l.4-3.1h-3.1V8.9c0-.9.3-1.5 1.6-1.5H16.8V4.6C16.4 4.5 15.3 4.4 14 4.4c-2.7 0-4.5 1.6-4.5 4.6v2.6H7v3.1h2.5V22h4z"/></svg>
+          <span data-i18n="shareFacebook">Facebook</span>
+        </a>
+        <a class="share-btn x" id="shareX" href="#" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 4h4.4l3.5 4.8L16.5 4H20l-5.7 6.6L20 20h-4.4l-3.8-5.2L7.5 20H4l6-6.9L4 4z"/></svg>
+          <span data-i18n="shareX">X</span>
+        </a>
+        <a class="share-btn telegram" id="shareTelegram" href="#" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9.7 14.8 9.4 19c.4 0 .6-.2.8-.4l1.9-1.8 4 2.9c.7.4 1.2.2 1.4-.7l2.5-11.8c.2-.9-.3-1.3-1-.9L4.4 10.5c-.9.3-.9.8-.2 1l3.6 1.1 8.3-5.2c.4-.2.7 0 .4.3L9.7 14.8z"/></svg>
+          <span data-i18n="shareTelegram">Telegram</span>
+        </a>
+        <a class="share-btn email" id="shareEmail" href="#">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1zm8 7 7-5H5l7 5zm0 2L4 10.2V17h16v-6.8L12 15z"/></svg>
+          <span data-i18n="shareEmail">Email</span>
+        </a>
+        <button class="share-btn copy" id="shareCopy" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8 7V5a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h3zm2 0h5a2 2 0 0 1 2 2v5h2V5H10v2zM5 9v10h9V9H5z"/></svg>
+          <span data-i18n="shareCopy">Copy link</span>
+        </button>
+      </div>
+    </section>
+    <footer>
+      <p class="contact-line" data-i18n-html="contactHtml">Questions or want to say hello? Email me at <a href="mailto:ollamaclient@gmail.com">ollamaclient@gmail.com</a>.</p>
+      <p data-i18n="footer">Affiliate disclosure: qualifying purchases may earn me a commission from AliExpress, at no additional cost to you.</p>
+    </footer>
   </div>
   <script src="i18n.js"></script>
   <script src="app.js"></script>
