@@ -1,69 +1,65 @@
-# Connect helpmegetaround.com (Namecheap hosting + Cloudflare)
+# Connect helpmegetaround.com
 
-Current status (checked from public DNS):
+**Last checked:** DNS for `helpmegetaround.com` returns **SERVFAIL** — nameservers point at Cloudflare but there is **no active zone** (lame delegation). The domain cannot load until Cloudflare + Namecheap nameservers match.
 
 | Domain | Status |
 |---|---|
-| **helpmegetaround.com** | Nameservers are Cloudflare (`ray.ns.cloudflare.com`, `peaches.ns.cloudflare.com`). **No A/CNAME records** → site does not load. |
-| **yalkut.fyi** | Still points at Cloudflare (`104.21.73.144` / `172.67.145.149`). Still on your hosting mail (jellyfish). |
-
-You need three links: **domain (Namecheap)** → **Cloudflare DNS** → **Namecheap hosting files**.
+| **helpmegetaround.com** | Broken DNS (no reachable authority). Fix Cloudflare zone + Namecheap NS first. |
+| **yalkut.fyi** | Still on Cloudflare proxy; Namecheap hosting mail (jellyfish). Remove from hosting addon domains. |
 
 ---
 
-## Step 1 — Namecheap hosting: swap domains
+## Fastest fix (recommended for this app)
 
-1. https://ap.www.namecheap.com → **Hosting List** → **Manage** (cPanel).
-2. **Addon Domains** (or **Domains**):
-   - **Remove** `yalkut.fyi`
-   - **Add** `helpmegetaround.com` (document root is often `public_html` or `public_html/helpmegetaround.com`)
-3. In cPanel home, copy **Shared IP Address** (example: `192.0.2.50`). You need this for Cloudflare.
+This converter is **Node + Chrome on your desktop**. Namecheap shared hosting cannot run it.
 
-Upload the finished site files (from your other AI) into that domain’s folder via **File Manager** or FTP.
+On your Windows PC (`c:\AI\AElinkGenerator\`):
 
-Do **not** change helpmegetaround.com nameservers away from Cloudflare.
+1. **Cloudflare:** https://dash.cloudflare.com → **Add a site** → `helpmegetaround.com` → Free plan.
+2. **Namecheap:** Domain List → `helpmegetaround.com` → **Custom DNS** → paste Cloudflare’s two nameservers → Save.
+3. Wait until Cloudflare shows **Active** (minutes to a few hours).
+4. Double-click **`connect-helpmegetaround.bat`** — one browser click for Cloudflare tunnel login, then it starts the site and tunnel.
 
----
+Public URL: **https://helpmegetaround.com** (keep both command windows open).
 
-## Step 2 — Cloudflare DNS (fix the site)
-
-1. https://dash.cloudflare.com → zone **helpmegetaround.com**
-2. **DNS** → **Records**:
-   - Delete any broken `CNAME` to a tunnel if the tunnel is not running.
-   - Add **A** `@` → **your Namecheap Shared IP** → **Proxied** (orange cloud)
-   - Add **CNAME** `www` → `helpmegetaround.com` → **Proxied**
-3. **SSL/TLS** → **Full** (not Full Strict until you have a valid cert on hosting)
-
-Wait 2–5 minutes, then open https://helpmegetaround.com
-
----
-
-## Step 3 — Disconnect yalkut.fyi
-
-**Hosting:** already removed in Step 1.
-
-**DNS (pick one):**
-
-- If `yalkut.fyi` has its own Cloudflare zone: **DNS** → remove A/CNAME records, or **Overview** → pause site.
-- If it only used Namecheap: **Domain List** → `yalkut.fyi` → **Nameservers** → **Namecheap BasicDNS** → **Redirect** or parking.
-
----
-
-## Optional — let the agent set Cloudflare DNS automatically
-
-Add secrets:
-
-- `CLOUDFLARE_API_TOKEN` — Cloudflare → My Profile → API Tokens → Edit zone DNS (zone: helpmegetaround.com)
-- `NAMECHEAP_HOSTING_IP` — the Shared IP from cPanel
-
-Then run:
+Check DNS anytime:
 
 ```
+node scripts/diagnose-dns.js
+```
+
+---
+
+## If you finished a static site (other AI) on Namecheap hosting
+
+1. cPanel → **Addon Domains:** remove `yalkut.fyi`, add `helpmegetaround.com`.
+2. Upload site files to that domain’s document root.
+3. Copy cPanel **Shared IP Address** (SPF for yalkut.fyi showed `68.65.123.210` / `68.65.123.213` — confirm in cPanel).
+4. Fix Cloudflare zone + Namecheap NS (steps 1–3 above).
+5. Cloudflare **DNS:** A `@` → Shared IP (Proxied), CNAME `www` → `helpmegetaround.com` (Proxied). SSL **Full**.
+
+Or run (with secrets in Cursor / `.env`):
+
+```
+set CLOUDFLARE_API_TOKEN=...
+set NAMECHEAP_HOSTING_IP=...
 node scripts/set-cloudflare-dns.js
 ```
 
 ---
 
-## If your finished app is the desktop Node converter (not static hosting)
+## Disconnect yalkut.fyi
 
-Namecheap shared hosting **cannot** run it. Use Cloudflare **Tunnel** from your PC instead of Step 2 A records. See `setup-named-tunnel.bat`.
+- **Hosting:** remove addon domain in cPanel.
+- **DNS:** pause Cloudflare zone or remove A/CNAME; or Namecheap BasicDNS + redirect.
+
+---
+
+## Why the agent could not click “Do it for me”
+
+Cloud Agent browser access hit the usage limit, and this environment has no `CLOUDFLARE_API_TOKEN` or Namecheap login. To finish from the cloud, add **Cursor environment secrets**:
+
+- `CLOUDFLARE_API_TOKEN` — Edit zone DNS for `helpmegetaround.com`
+- `NAMECHEAP_HOSTING_IP` — only if using static hosting
+
+Then re-run the agent, or run `connect-helpmegetaround.bat` once on your PC (you only click Authorize in the browser).
